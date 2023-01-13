@@ -1,0 +1,19 @@
+{
+  "include": [
+    "**/hooks"
+  ],
+  "exclude": [
+    "**/build",
+    "**/node_modules",
+    "**/index.tsx",
+    "**/main.tsx",
+    "**/rollup.config.ts"
+  ],
+  "compilerOptions": {
+    "jsx": "react",
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationDir": "types"
+  }
+}
