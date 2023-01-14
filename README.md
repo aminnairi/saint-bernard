@@ -123,3 +123,7 @@ See [`LICENSE`](./LICENSE).
 ## Security
 
 See [`SECURITY.md`](./SECURITY.md).
+
+## Contributing
+
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
