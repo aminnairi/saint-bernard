@@ -39,4 +39,4 @@ jobs:
       - name: Test
         run: npm run coverage
       - name: Report
-        run: npm coverage-report
+        run: npm run coverage-report
