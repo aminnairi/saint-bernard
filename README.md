@@ -165,7 +165,7 @@ export declare class CancelError extends Error {
 #### Example
 
 ```tsx
-import React, { Fragment, useEffect } from "react"
+import React, { useEffect } from "react"
 import { CancelError, useRequest } from "saint-bernard"
 import { z } from "zod"
 
@@ -288,7 +288,7 @@ export const Page = () => {
 ##### cancel
 
 ```tsx
-import React, { Fragment } from "react"
+import React, { Fragment, useEffect } from "react"
 import { CancelError, useRequest } from "saint-bernard"
 
 export const Page = () => {
@@ -300,6 +300,8 @@ export const Page = () => {
     initialOptions: {},
     resolver: async response => null
   })
+  
+  useEffect(() => cancel, [cancel])
 
   if (loading) {
     return (
