@@ -6,7 +6,7 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 
 ## Summary
 
-- [Summary](#summary)
+- [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Uninstallation](#uninstallation)
@@ -27,7 +27,7 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
       - [data](#data)
       - [error](#error)
       - [loading](#loading)
-      - [abortControler](#abortControler)
+      - [abortControler](#abortcontroler)
 - [Changelog](#changelog)
 - [Code of conduct](#code-of-conduct)
 - [License](#license)
@@ -37,7 +37,7 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 ## Features
 
 - Close to the metal, configurable yet high-level enough to help you do more with less
-- Tested up to cover 100% of the source-code published
+- Tested to cover 100% of the source-code published
 - Zero-dependencies
 - Lightweight
 - Written in TypeScript from the ground up
@@ -47,6 +47,8 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 - Full control over the options, url, path & query parameters
 - Ability to cancel requests at any time
 - Written to fully work with modern React Hooks and functional components
+
+[Back to summary](#summary).
 
 ## Requirements
 
