@@ -34,6 +34,20 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 - [Security](#security)
 - [Contributing](#contributing)
 
+## Features
+
+- Close to the metal, configurable yet high-level enough to help you do more with less
+- Tested up to cover 100% of the source-code published
+- Zero-dependencies
+- Lightweight
+- Written in TypeScript from the ground up
+- Strict semantic versionning for the releases
+- Best when used with [`zod`](https://www.npmjs.com/package/zod)
+- Leveraging the [Web API Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- Full control over the options, url, path & query parameters
+- Ability to cancel requests at any time
+- Written to fully work with modern React Hooks and functional components
+
 ## Requirements
 
 - [React 16.8.0+](https://www.npmjs.com/package/react)
