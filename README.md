@@ -126,6 +126,70 @@ export const Main = () => {
 
 [Back to summary](#summary).
 
+## API
+
+### CancelError
+
+#### Interface
+
+```typescript
+export declare class CancelError extends Error {
+    constructor(message: string);
+}
+```
+
+#### Example
+
+```tsx
+import React, { Fragment, useEffect } from "react"
+import { CancelError, useRequest } from "saint-bernard"
+import { z } from "zod"
+
+const usersSchema = z.array(z.object({
+  id: z.number()
+}))
+
+type Users = z.infer<typeof usersSchema>
+
+export const Main = () => {
+  const { error, loading, data, request, cancel } = useRequest<Users>({
+    initialPath: "users",
+    initialUrl: "https://jsonplaceholder.typicode.com",
+    initialQueries: {},
+    initialOptions: {},
+    initialData: [],
+    resolver: async response => {
+      const users = await response.json()
+      return usersSchema.parse(users)
+    } 
+  })
+  
+  useEffect(() => cancel, [cancel]) 
+  
+  if (loading) {
+    return (
+      <button onClick={cancel}>Cancel</button>
+    )
+  }
+  
+  if (error) {
+    if (error instanceof CancelError) {
+      return (
+        <p>Canceled</p>
+      )
+    }
+    
+    return (
+      <p>Error</p>
+    )
+  }
+  
+  return (
+    <button onClick={request}>Request</button>
+  )
+}
+```
+
 ## Changelog
 
 See [`CHANGELOG.md`](./CHANGELOG.md).
