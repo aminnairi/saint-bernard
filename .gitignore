@@ -4,3 +4,4 @@
 **/types/
 **/.npmrc
 **/coverage
+**/.coveralls.yml
