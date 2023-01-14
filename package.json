@@ -46,7 +46,6 @@
     "@types/react-dom": "18.0.10",
     "@vitest/coverage-c8": "^0.27.1",
     "happy-dom": "8.1.4",
-    "node-jq": "2.3.4",
     "react-dom": "18.2.0",
     "rollup": "3.10.0",
     "rollup-plugin-esbuild": "5.0.0",
