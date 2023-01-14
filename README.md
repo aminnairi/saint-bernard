@@ -2,6 +2,8 @@
 
 React Hook for requesting data using the Web API Fetch written in TypeScript
 
+[![NPM](https://badgen.net/npm/v/saint-bernard)](https://www.npmjs.com/package/saint-bernard)
+
 ## Requirements
 
 - React 16.8.0+
