@@ -6,10 +6,28 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 
 ## Summary
 
+- [Summary](#summary)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Uninstallation](#uninstallation)
 - [Usage](#usage)
+- [API](#api)
+  - [CancelError](#cancelerror)
+    - [Interface](#interface)
+    - [Example](#example)
+  - [useRequest](#userequest)
+    - [Interface](#interface-1)
+    - [Examples](#examples)
+      - [request](#request)
+      - [cancel](#cancel)
+      - [options](#options)
+      - [queries](#queries)
+      - [path](#path)
+      - [url](#url)
+      - [data](#data)
+      - [error](#error)
+      - [loading](#loading)
+      - [abortControler](#abortControler)
 - [Changelog](#changelog)
 - [Code of conduct](#code-of-conduct)
 - [License](#license)
@@ -128,7 +146,11 @@ export const Main = () => {
 
 ## API
 
+[Back to summary](#summary).
+
 ### CancelError
+
+[Back to summary](#summary).
 
 #### Interface
 
@@ -138,10 +160,12 @@ export declare class CancelError extends Error {
 }
 ```
 
+[Back to summary](#summary).
+
 #### Example
 
 ```tsx
-import React, { Fragment, useEffect } from "react"
+import React, { useEffect } from "react"
 import { CancelError, useRequest } from "saint-bernard"
 import { z } from "zod"
 
@@ -190,7 +214,11 @@ export const Main = () => {
 }
 ```
 
+[Back to summary](#summary).
+
 ### useRequest
+
+[Back to summary](#summary).
 
 #### Interface
 
@@ -227,7 +255,90 @@ export declare const useRequest: <Data>(options: UseRequestOptions<Data>) => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### Examples
+
+[Back to summary](#summary).
+
+##### request
+
+```tsx
+import React from "react"
+import { CancelError, useRequest } from "saint-bernard"
+
+export const Page = () => {
+  const { request } = useRequest<null>({
+    initialPath: "users",
+    initialUrl: "https://jsonplaceholder.typicode.com",
+    initialData: null,
+    initialQueries: {},
+    initialOptions: {},
+    resolver: async response => null
+  })
+
+  return (
+    <button onClick={request}>Request</button>
+  )
+}
+```
+
+[Back to summary](#summary).
+
+##### cancel
+
+```tsx
+import React, { Fragment, useEffect } from "react"
+import { CancelError, useRequest } from "saint-bernard"
+
+export const Page = () => {
+  const { loading, error, request, cancel } = useRequest<null>({
+    initialPath: "",
+    initialUrl: "",
+    initialData: null,
+    initialQueries: {},
+    initialOptions: {},
+    resolver: async response => null
+  })
+  
+  useEffect(() => cancel, [cancel])
+
+  if (loading) {
+    return (
+      <Fragment>
+        <h1>Loading</h1>
+        <button onClick={cancel}>Cancel</button>
+      </Fragment>
+    )
+  }
+
+  if (error) {
+    if (error instanceof CancelError) {
+      return (
+        <Fragment>
+          <h1>Canceled</h1>
+          <button onClick={request}>Retry?</button>
+        </Fragment>
+      )
+    }
+
+    return (
+      <Fragment>
+        <h1>Error</h1>
+        <button onClick={request}>Retry?</button>
+      </Fragment>
+    )
+  }
+
+  return (
+    <Fragment>
+      <button onClick={request}>Request</button>
+    </Fragment>
+  )
+}
+```
+
+[Back to summary](#summary).
 
 ##### options
 
@@ -268,6 +379,8 @@ export const Page = () => {
 }
 ```
 
+[Back to summary](#summary).
+
 ##### queries
 
 ```tsx
@@ -280,9 +393,7 @@ export const Page = () => {
     initialUrl: "https://jsonplaceholder.typicode.com/users",
     initialData: null,
     initialQueries: {},
-    initialOptions: {
-      method: "GET"
-    },
+    initialOptions: {},
     resolver: async response => {
       return null
     }
@@ -313,6 +424,228 @@ export const Page = () => {
   )
 }
 ```
+
+[Back to summary](#summary).
+
+##### path
+
+```tsx
+import React, { Fragment, useCallback } from "react"
+import { useRequest } from "saint-bernard"
+
+export const Page = () => {
+  const { path, setPath, request } = useRequest<null>({
+    initialPath: "users",
+    initialUrl: "https://jsonplaceholder.typicode.com/users",
+    initialData: null,
+    initialQueries: {},
+    initialOptions: {},
+    resolver: async response => {
+      return null
+    }
+  })
+
+  const updatePath = useCallback(() => {
+    setPath("posts")
+  }, [setPath])
+
+  return (
+    <Fragment>
+      <p>{path}</p>
+      <button onClick={updatePath}>Update path</button>
+      <button onClick={request}>Request</button>
+    </Fragment>
+  )
+}
+```
+
+[Back to summary](#summary).
+
+##### url
+
+```tsx
+import React, { Fragment, useCallback } from "react"
+import { useRequest } from "saint-bernard"
+
+export const Page = () => {
+  const { url, setUrl, request } = useRequest<null>({
+    initialPath: "",
+    initialUrl: "https://jsonplaceholder.typicode.com/users",
+    initialData: null,
+    initialQueries: {},
+    initialOptions: {},
+    resolver: async response => {
+      return null
+    }
+  })
+
+  const updateUrl = useCallback(() => {
+    setUrl("https://ipapi.co/json")
+  }, [setUrl])
+
+  return (
+    <Fragment>
+      <p>{url}</p>
+      <button onClick={updateUrl}>Update URL</button>
+      <button onClick={request}>Request</button>
+    </Fragment>
+  )
+}
+```
+
+[Back to summary](#summary).
+
+##### data
+
+```tsx
+import React, { Fragment, useCallback } from "react"
+import { z } from "zod"
+import { useRequest } from "saint-bernard"
+
+const usersSchema = z.array(z.object({
+  id: z.number()
+}))
+
+type Users = z.infer<typeof usersSchema>
+
+export const Page = () => {
+  const { data, setData, request } = useRequest<Users>({
+    initialPath: "users",
+    initialUrl: "https://jsonplaceholder.typicode.com",
+    initialData: [],
+    initialQueries: {},
+    initialOptions: {},
+    resolver: async response => {
+      const users = await response.json()
+      return usersSchema.parse(users)
+    }
+  })
+
+  const reset = useCallback(() => {
+    setData([])
+  }, [setData])
+
+  return (
+    <Fragment>
+      <p>{JSON.stringify(data)}</p>
+      <button onClick={reset}>Reset</button>
+      <button onClick={request}>Request</button>
+    </Fragment>
+  )
+}
+```
+
+[Back to summary](#summary).
+
+##### error
+
+```tsx
+import React, { Fragment, useCallback } from "react"
+import { useRequest } from "saint-bernard"
+
+export const Page = () => {
+  const { error, setError, request } = useRequest<null>({
+    initialPath: "",
+    initialUrl: "",
+    initialData: null,
+    initialQueries: {},
+    initialOptions: {},
+    resolver: async response => {
+      throw new Error("error")
+    }
+  })
+
+  const reset = useCallback(() => {
+    setError(null)
+  }, [setError])
+
+  if (error) {
+    return (
+      <Fragment>
+        <h1>Error</h1>
+        <button onClick={reset}>Reset</button>
+      </Fragment>
+    )
+  }
+
+  return (
+    <Fragment>
+      <button onClick={request}>Request</button>
+    </Fragment>
+  )
+}
+```
+
+[Back to summary](#summary).
+
+##### loading
+
+```tsx
+import React, { useCallback } from "react"
+import { useRequest } from "saint-bernard"
+
+export const Page = () => {
+  const { loading, setLoading } = useRequest<null>({
+    initialPath: "",
+    initialUrl: "",
+    initialData: null,
+    initialQueries: {},
+    initialOptions: {},
+    resolver: async response => null
+  })
+
+  const load = useCallback(() => {
+    setLoading(true)
+  }, [setLoading])
+
+  const unload = useCallback(() => {
+    setLoading(false)
+  }, [setLoading])
+
+  if (loading) {
+    return (
+      <button onClick={unload}>Stop loading</button>
+    )
+  }
+
+  return (
+    <button onClick={load}>Load</button>
+  )
+}
+```
+
+[Back to summary](#summary).
+
+##### abortControler
+
+```tsx
+import React, { Fragment, useCallback } from "react"
+import { useRequest } from "saint-bernard"
+
+export const Page = () => {
+  const { abortController, setAbortController } = useRequest<null>({
+    initialPath: "",
+    initialUrl: "",
+    initialData: null,
+    initialQueries: {},
+    initialOptions: {},
+    resolver: async response => null
+  })
+
+  const updateAbortController = useCallback(() => {
+    setAbortController(new AbortController())
+  }, [setAbortController])
+
+  return (
+    <Fragment>
+      <p>{JSON.stringify(abortController)}</p>
+      <button onClick={updateAbortController}>Change abort controller</button>
+    </Fragment>
+  )
+}
+```
+
+[Back to summary](#summary).
 
 ## Changelog
 
