@@ -67,6 +67,7 @@ export const useRequest = <Data>({initialUrl, initialPath, initialQueries, initi
   }, [options, url, stringifiedQueries, path])
 
   return {
+    options,
     stringifiedQueries,
     queries,
     path,
