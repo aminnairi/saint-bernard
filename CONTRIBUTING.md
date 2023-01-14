@@ -17,6 +17,12 @@ npm install
 npm run build
 ```
 
+## Types
+
+```bash
+npm run types
+```
+
 ## Test 
 
 ```bash
