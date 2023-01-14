@@ -2,8 +2,16 @@
 
 ## Versions
 
+- [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 0.3.0
+
+- Added complete documentation on all exposed API ([#33](https://github.com/aminnairi/saint-bernard/pull/33))
+- Added links for the requirements ([#35](https://github.com/aminnairi/saint-bernard/pull/35))
+- Added a features section in the documentation ([#36](https://github.com/aminnairi/saint-bernard/pull/36))
+- Prevented the test files from being type generated ([#37](https://github.com/aminnairi/saint-bernard/pull/37))
 
 ## 0.2.0
 
