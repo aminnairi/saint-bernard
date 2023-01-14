@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Dependencies
-        run: npm ci
+        run: npm install
       - name: Test
         run: npm test
       - name: Pack
