@@ -33,8 +33,6 @@ export const useRequest = <Data>({initialUrl, initialPath, initialQueries, initi
       return ""
     }
 
-    console.log(`?${new URLSearchParams(queryEntries).toString()}`)
-
     return `?${new URLSearchParams(queryEntries).toString()}`
   }, [queries])
 
@@ -50,7 +48,6 @@ export const useRequest = <Data>({initialUrl, initialPath, initialQueries, initi
     setLoading(true)
 
     const endpoint = new URL(`${path}${stringifiedQueries}`, url)
-    console.log({endpoint})
 
     fetch(endpoint, {
       ...options,
