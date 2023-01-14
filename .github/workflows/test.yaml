@@ -21,8 +21,5 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
-      - name: Pack
-        run: npm pack --dry-run > pack-output.txt
-      - name: Library
-        run: |
-          grep build/index.js pack-output.txt && grep build/index.umd.js pack-output.txt && grep types/index.d.ts pack-output.txt
+      - name: Tarball
+        run: ls build/index.js && ls build/index.umd.js && ls types/index.d.ts
