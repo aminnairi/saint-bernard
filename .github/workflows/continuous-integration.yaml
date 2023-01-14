@@ -25,3 +25,18 @@ jobs:
         run: npm run types
       - name: Tarball
         run: ls build/index.js && ls build/index.umd.js && ls types/index.d.ts
+  report:
+    name: Coverage report
+    if: ${{ github.ref == 'refs/heads/production' }}
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Token
+        run: 'echo "repo_token: ${{ secrets.COVERALLS_TOKEN }}" > .coveralls.yml'
+      - name: Dependencies
+        run: npm install
+      - name: Test
+        run: npm coverage
+      - name: Report
+        run: npm coverage-report
