@@ -45,7 +45,7 @@ npm uninstall saint-bernard
 > Note: we recommend using [`zod`](https://www.npmjs.com/package/zod) for correctly checking at runtime the value received from a server.
 
 ```tsx
-import React, { Fragment, useCallback, useEffect } from "react"
+import React, { Fragment, useEffect } from "react"
 import { CancelError, useRequest } from "saint-bernard"
 import { z } from "zod"
 
