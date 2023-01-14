@@ -36,9 +36,9 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 
 ## Requirements
 
-- React 16.8.0+
-- Node
-- NPM
+- [React 16.8.0+](https://www.npmjs.com/package/react)
+- [Node](https://nodejs.org)
+- [NPM](https://www.npmjs.com/)
 
 [Back to summary](#summary).
 
