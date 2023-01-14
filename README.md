@@ -288,13 +288,13 @@ export const Page = () => {
 ##### cancel
 
 ```tsx
-import React, { Fragment, useCallback } from "react"
+import React, { Fragment } from "react"
 import { CancelError, useRequest } from "saint-bernard"
 
 export const Page = () => {
   const { loading, error, request, cancel } = useRequest<null>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com",
+    initialPath: "",
+    initialUrl: "",
     initialData: null,
     initialQueries: {},
     initialOptions: {},
@@ -391,9 +391,7 @@ export const Page = () => {
     initialUrl: "https://jsonplaceholder.typicode.com/users",
     initialData: null,
     initialQueries: {},
-    initialOptions: {
-      method: "GET"
-    },
+    initialOptions: {},
     resolver: async response => {
       return null
     }
@@ -439,9 +437,7 @@ export const Page = () => {
     initialUrl: "https://jsonplaceholder.typicode.com/users",
     initialData: null,
     initialQueries: {},
-    initialOptions: {
-      method: "GET"
-    },
+    initialOptions: {},
     resolver: async response => {
       return null
     }
@@ -475,9 +471,7 @@ export const Page = () => {
     initialUrl: "https://jsonplaceholder.typicode.com/users",
     initialData: null,
     initialQueries: {},
-    initialOptions: {
-      method: "GET"
-    },
+    initialOptions: {},
     resolver: async response => {
       return null
     }
@@ -518,9 +512,7 @@ export const Page = () => {
     initialUrl: "https://jsonplaceholder.typicode.com",
     initialData: [],
     initialQueries: {},
-    initialOptions: {
-      method: "GET"
-    },
+    initialOptions: {},
     resolver: async response => {
       const users = await response.json()
       return usersSchema.parse(users)
@@ -547,24 +539,15 @@ export const Page = () => {
 
 ```tsx
 import React, { Fragment, useCallback } from "react"
-import { z } from "zod"
 import { useRequest } from "saint-bernard"
 
-const usersSchema = z.array(z.object({
-  id: z.number()
-}))
-
-type Users = z.infer<typeof usersSchema>
-
 export const Page = () => {
-  const { error, setError, request } = useRequest<Users>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com",
-    initialData: [],
+  const { error, setError, request } = useRequest<null>({
+    initialPath: "",
+    initialUrl: "",
+    initialData: null,
     initialQueries: {},
-    initialOptions: {
-      method: "GET"
-    },
+    initialOptions: {},
     resolver: async response => {
       throw new Error("error")
     }
@@ -596,13 +579,13 @@ export const Page = () => {
 ##### loading
 
 ```tsx
-import React, { Fragment, useCallback } from "react"
-import { useRequest } from "../hooks"
+import React, { useCallback } from "react"
+import { useRequest } from "saint-bernard"
 
 export const Page = () => {
   const { loading, setLoading } = useRequest<null>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com",
+    initialPath: "",
+    initialUrl: "",
     initialData: null,
     initialQueries: {},
     initialOptions: {},
@@ -635,12 +618,12 @@ export const Page = () => {
 
 ```tsx
 import React, { Fragment, useCallback } from "react"
-import { useRequest } from "../hooks"
+import { useRequest } from "saint-bernard"
 
 export const Page = () => {
   const { abortController, setAbortController } = useRequest<null>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com",
+    initialPath: "",
+    initialUrl: "",
     initialData: null,
     initialQueries: {},
     initialOptions: {},
