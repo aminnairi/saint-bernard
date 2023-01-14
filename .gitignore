@@ -3,3 +3,4 @@
 **/package-lock.json
 **/types/
 **/.npmrc
+**/coverage
