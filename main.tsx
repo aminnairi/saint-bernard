@@ -1,79 +1,21 @@
-import React, { Fragment, useCallback, useEffect } from "react"
-import { CancelError, useRequest } from "./hooks"
-import { z } from "zod"
-
-const postsSchema = z.array(z.object({
-  body: z.string(),
-  id: z.number()
-}))
-
-type Posts = z.infer<typeof postsSchema>
+import React, { Fragment } from "react"
+import { Routes, Route } from "react-router-dom"
+import { UsersUserPostsPage } from "./pages/users/user/posts"
+import { HomePage } from "./pages/home"
+import { UsersPage } from "./pages/users"
+import { Header } from "./components/header"
+import { UserPage } from "./pages/users/user"
 
 export const Main = () => {
-  const { data, loading, error, request, cancel } = useRequest<Posts>({
-    initialPath: "users/1/posts",
-    initialUrl: "https://jsonplaceholder.typicode.com",
-    initialQueries: {
-      title: "sunt aut facere repellat provident occaecati excepturi optio reprehenderit"
-    },
-    initialData: [],
-    initialOptions: {
-      method: "GET",
-      headers: {
-        "Accept": "application/json"
-      }
-    },
-    resolver: async (response) => {
-      const posts = await response.json()
-      return postsSchema.parse(posts)
-    }
-  })
-
-  const fetchPosts = useCallback(() => {
-    request()
-  }, [request])
-
-  if (loading) {
-    return (
-      <Fragment>
-        <p>Loading...</p>
-        <button onClick={cancel}>Cancel</button>
-      </Fragment>
-    )
-  }
-
-  if (error) {
-    if (error instanceof CancelError)  {
-      return (
-        <Fragment>
-          <h1>Canceled</h1>
-          <p>Request has been canceled</p>
-          <button onClick={request}>Retry?</button>
-        </Fragment>
-      )
-    }
-
-    return (
-      <Fragment>
-        <h1>Error</h1>
-        <p>{error.message}</p>
-        <button onClick={request}>Retry?</button>
-      </Fragment>
-    )
-  }
-
   return (
     <Fragment>
-      <button onClick={fetchPosts}>Fetch posts</button>
-      <table>
-        <tbody>
-          {data.map(article => (
-            <tr key={article.id}>
-              <td>{article.body}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/users" element={<UsersPage />} />
+        <Route path="/users/:user" element={<UserPage />} />
+        <Route path="/users/:user/posts" element={<UsersUserPostsPage />} />
+      </Routes>
     </Fragment>
   )
 }
