@@ -4,7 +4,13 @@ export default defineConfig({
   test: {
     environment: "happy-dom",
     coverage: {
-      enabled: true
+      enabled: true,
+      reporter: [
+        "text",
+        "json",
+        "lcov",
+        "html"
+      ]
     }
   }
 })
