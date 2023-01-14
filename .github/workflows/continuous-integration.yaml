@@ -37,6 +37,6 @@ jobs:
       - name: Dependencies
         run: npm install
       - name: Test
-        run: npm coverage
+        run: npm run coverage
       - name: Report
         run: npm coverage-report
