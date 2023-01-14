@@ -6,6 +6,7 @@
     "**/build",
     "**/node_modules",
     "**/index.tsx",
+    "**/hooks/index.test.tsx",
     "**/main.tsx",
     "**/rollup.config.ts"
   ],
