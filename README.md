@@ -107,3 +107,19 @@ export const Main = () => {
   )
 }
 ```
+
+## Changelog
+
+See [`CHANGELOG.md`](./CHANGELOG.md).
+
+## Code of conduct
+
+See [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md).
+
+## License
+
+See [`LICENSE`](./LICENSE).
+
+## Security
+
+See [`SECURITY.md`](./SECURITY.md).
