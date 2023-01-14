@@ -6,7 +6,6 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 
 ## Summary
 
-
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Uninstallation](#uninstallation)
@@ -76,10 +75,8 @@ export const Main = () => {
       return postsSchema.parse(posts)
     }
   })
-
-  const fetchPosts = useCallback(() => {
-    request()
-  }, [request])
+  
+  useEffect(() => cancel, [cancel])
 
   if (loading) {
     return (
@@ -112,7 +109,7 @@ export const Main = () => {
 
   return (
     <Fragment>
-      <button onClick={fetchPosts}>Fetch posts</button>
+      <button onClick={request}>Fetch posts</button>
       <table>
         <tbody>
           {data.map(article => (
