@@ -190,6 +190,84 @@ export const Main = () => {
 }
 ```
 
+### useRequest
+
+#### Interface
+
+```typescript
+export interface UseRequestOptions<Data> {
+    initialPath: string;
+    initialUrl: string;
+    initialQueries: Record<string, string>;
+    initialData: Data;
+    initialOptions: RequestInit;
+    resolver: (response: Response) => Promise<Data>;
+}
+
+export declare const useRequest: <Data>(options: UseRequestOptions<Data>) => {
+    options: RequestInit;
+    stringifiedQueries: string;
+    queries: Record<string, string>;
+    path: string;
+    url: string;
+    data: Data;
+    error: Error | null;
+    loading: boolean;
+    setQueries: import("react").Dispatch<import("react").SetStateAction<Record<string, string>>>;
+    setUrl: import("react").Dispatch<import("react").SetStateAction<string>>;
+    setPath: import("react").Dispatch<import("react").SetStateAction<string>>;
+    setData: import("react").Dispatch<import("react").SetStateAction<Data>>;
+    setError: import("react").Dispatch<import("react").SetStateAction<Error | null>>;
+    setLoading: import("react").Dispatch<import("react").SetStateAction<boolean>>;
+    abortController: AbortController;
+    setAbortController: import("react").Dispatch<import("react").SetStateAction<AbortController>>;
+    setOptions: import("react").Dispatch<import("react").SetStateAction<RequestInit>>;
+    cancel: () => void;
+    request: () => void;
+};
+```
+
+#### Example
+
+##### options
+
+```tsx
+import React, { Fragment, useCallback } from "react"
+import { useRequest } from "../hooks"
+
+export const Page = () => {
+  const { options, setOptions, request } = useRequest<null>({
+    initialPath: "users",
+    initialUrl: "https://jsonplaceholder.typicode.com/users",
+    initialData: null,
+    initialQueries: {},
+    initialOptions: {
+      method: "GET"
+    },
+    resolver: async response => {
+      return null
+    }
+  })
+
+  const updateOptions = useCallback(() => {
+    setOptions(oldOptions => ({
+      ...oldOptions,
+      headers: {
+        "Accept": "application/json"
+      }
+    }))
+  }, [setOptions])
+
+  return (
+    <Fragment>
+      <p>{JSON.stringify(options)}</p>
+      <button onClick={updateOptions}>Update options</button>
+      <button onClick={request}>Request</button>
+    </Fragment>
+  )
+}
+```
+
 ## Changelog
 
 See [`CHANGELOG.md`](./CHANGELOG.md).
