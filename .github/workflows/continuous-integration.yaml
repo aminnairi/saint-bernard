@@ -1,4 +1,4 @@
-name: Test
+name: Continuous Integration
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    name: Test
+    name: Ensure that every tests passes and the build has the expected files
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
