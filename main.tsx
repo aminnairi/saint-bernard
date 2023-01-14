@@ -1,20 +1,20 @@
 import React, { Fragment, useCallback, useEffect } from "react"
-import { CancelError, useRequest } from "./hooks/request"
+import { CancelError, useRequest } from "./hooks"
 import { z } from "zod"
 
-const usersSchema = z.array(z.object({
+const postsSchema = z.array(z.object({
   body: z.string(),
   id: z.number()
 }))
 
-type Users = z.infer<typeof usersSchema>
+type Posts = z.infer<typeof postsSchema>
 
 export const Main = () => {
-  const { data, loading, error, request, cancel, setQueries } = useRequest<Users>({
+  const { data, loading, error, request, cancel } = useRequest<Posts>({
     initialPath: "users/1/posts",
     initialUrl: "https://jsonplaceholder.typicode.com",
     initialQueries: {
-      id: "2"
+      title: "sunt aut facere repellat provident occaecati excepturi optio reprehenderit"
     },
     initialData: [],
     initialOptions: {
@@ -24,14 +24,14 @@ export const Main = () => {
       }
     },
     resolver: async (response) => {
-      const users = await response.json()
-      return usersSchema.parse(users)
+      const posts = await response.json()
+      return postsSchema.parse(posts)
     }
   })
 
-  const fetchUsers = useCallback(() => {
+  const fetchPosts = useCallback(() => {
     request()
-  }, [request, setQueries])
+  }, [request])
 
   if (loading) {
     return (
@@ -64,7 +64,7 @@ export const Main = () => {
 
   return (
     <Fragment>
-      <button onClick={fetchUsers}>Fetch users</button>
+      <button onClick={fetchPosts}>Fetch posts</button>
       <table>
         <tbody>
           {data.map(article => (
