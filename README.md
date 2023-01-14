@@ -27,7 +27,7 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
       - [data](#data)
       - [error](#error)
       - [loading](#loading)
-      - [abortControllerr](#abortcontrollerr)
+      - [abortControler](#abortControler)
 - [Changelog](#changelog)
 - [Code of conduct](#code-of-conduct)
 - [License](#license)
@@ -631,7 +631,7 @@ export const Page = () => {
 
 [Back to summary](#summary).
 
-##### abortControllerr
+##### abortControler
 
 ```tsx
 import React, { Fragment, useCallback } from "react"
