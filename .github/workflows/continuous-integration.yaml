@@ -1,0 +1,27 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - development
+  push:
+    branches:
+      - production
+
+jobs:
+  test:
+    name: Ensure that every tests passes and the build has the expected files
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Dependencies
+        run: npm install
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Types
+        run: npm run types
+      - name: Tarball
+        run: ls build/index.js && ls build/index.umd.js && ls types/index.d.ts
