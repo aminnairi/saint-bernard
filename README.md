@@ -227,13 +227,13 @@ export declare const useRequest: <Data>(options: UseRequestOptions<Data>) => {
 };
 ```
 
-#### Example
+#### Examples
 
 ##### options
 
 ```tsx
 import React, { Fragment, useCallback } from "react"
-import { useRequest } from "../hooks"
+import { useRequest } from "saint-bernard"
 
 export const Page = () => {
   const { options, setOptions, request } = useRequest<null>({
@@ -262,6 +262,52 @@ export const Page = () => {
     <Fragment>
       <p>{JSON.stringify(options)}</p>
       <button onClick={updateOptions}>Update options</button>
+      <button onClick={request}>Request</button>
+    </Fragment>
+  )
+}
+```
+
+##### queries
+
+```tsx
+import React, { Fragment, useCallback } from "react"
+import { useRequest } from "saint-bernard"
+
+export const Page = () => {
+  const { queries, stringifiedQueries, setQueries, request } = useRequest<null>({
+    initialPath: "users",
+    initialUrl: "https://jsonplaceholder.typicode.com/users",
+    initialData: null,
+    initialQueries: {},
+    initialOptions: {
+      method: "GET"
+    },
+    resolver: async response => {
+      return null
+    }
+  })
+
+  const queryByName = useCallback(() => {
+    setQueries(oldQueries => ({
+      ...oldQueries,
+      name: "Bret"
+    }))
+  }, [setQueries])
+
+  const queryLimit = useCallback(() => {
+    setQueries(oldQueries => ({
+      ...oldQueries,
+      limit: "5"
+    }))
+  }, [setQueries])
+
+  return (
+    <Fragment>
+      <p>{JSON.stringify(queries)}</p>
+      <p>{stringifiedQueries}</p>
+      <button onClick={queryByName}>Add name query</button>
+      <button onClick={queryLimit}>Limit to 5</button>
       <button onClick={request}>Request</button>
     </Fragment>
   )
