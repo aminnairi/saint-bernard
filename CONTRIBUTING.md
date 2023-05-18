@@ -2,35 +2,35 @@
 
 ## Requirements
 
-- Node
-- NPM
+- Docker
+- Docker Compose
 
 ## Dependencies
 
 ```bash
-npm install
+docker compose run --rm npm install
 ```
 
 ## Build
 
 ```bash
-npm run build
+docker compose run --rm npm run build
 ```
 
 ## Types
 
 ```bash
-npm run types
+docker compose run --rm npm run types
 ```
 
 ## Test 
 
 ```bash
-npm test
+docker compose run --rm npm test
 ```
 
 ## Coverage
 
 ```bash
-npm run coverage
+docker compose run --rm npm run coverage
 ```
