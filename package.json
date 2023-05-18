@@ -2,12 +2,12 @@
   "private": false,
   "name": "saint-bernard",
   "description": "React Hook for requesting data using the Web API Fetch written in TypeScript",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "homepage": "https://github.com/aminnairi/saint-bernard#readme",
   "license": "MIT",
-  "main": "build/index.umd.js",
-  "module": "build/index.js",
-  "exports": "build/index.js",
+  "main": "./build/index.umd.js",
+  "module": "./build/index.js",
+  "exports": "./build/index.js",
   "types": "types/index.d.ts",
   "bugs": {
     "url": "https://github.com/aminnairi/saint-bernard/issues"
@@ -55,6 +55,7 @@
     "rollup": "3.10.0",
     "rollup-plugin-delete": "2.0.0",
     "rollup-plugin-esbuild": "5.0.0",
+    "typescript": "5.0.4",
     "vite": "4.0.4",
     "vitest": "0.29.3",
     "zod": "3.20.2"
