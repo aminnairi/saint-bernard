@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
-import { render, waitFor } from "@testing-library/react"
-import { describe, test, expect, vi, afterEach } from "vitest"
+import { render } from "@testing-library/react"
+import { describe, test, expect, vi } from "vitest"
 import { CancelError, useRequest } from "."
 
 describe("CancelError", () => {
@@ -14,51 +14,25 @@ describe("CancelError", () => {
 })
 
 describe("useRequest", () => {
-  test("It should return the stringified queries correctly", () => {
-    const Main = () => {
-      const { stringifiedQueries } = useRequest({
-        initialUrl: "https://jsonplaceholder.typicode.com",
-        initialPath: "users",
-        initialData: [],
-        initialQueries: {
-          a: "1",
-          b: "2"
-        },
-        initialOptions: {},
-        resolver: (response) => response.json()
-      })
-
-      return (
-        <p>{stringifiedQueries}</p>
-      )
-    }
-
-    const { container } = render(<Main />)
-
-    expect(container.innerText).toEqual("?a=1&b=2")
-  })
-
   test("It should return the data", async () => {
     const spy = vi.spyOn(window, "fetch")
 
-    spy.mockImplementation(() => Promise.resolve(new Response(JSON.stringify([{id: 1}]))))
+    spy.mockImplementation(() => Promise.resolve(new Response(JSON.stringify([{ id: 1 }]))))
 
     const Main = () => {
-      const { data, request } = useRequest({
-        initialUrl: "https://jsonplaceholder.typicode.com",
-        initialPath: "users",
-        initialData: [],
-        initialQueries: {},
-        initialOptions: {},
+      const { state, request } = useRequest({
+        initialState: [],
         resolver: (response) => response.json()
       })
 
       useEffect(() => {
-        request()
+        request({
+          url: "https://jsonplaceholder.typicode.com"
+        })
       }, [request])
 
       return (
-        <p>{JSON.stringify(data)}</p>
+        <p>{JSON.stringify(state)}</p>
       )
     }
 
@@ -66,14 +40,16 @@ describe("useRequest", () => {
 
     await new Promise(resolve => setTimeout(resolve, 1))
 
-    expect(container.innerText).toEqual(JSON.stringify([{id: 1}]))
+    expect(container.innerText).toEqual(JSON.stringify([{ id: 1 }]))
   })
 
   test("It should return a cancel error", async () => {
     const spy = vi.spyOn(window, "fetch")
 
-    spy.mockImplementation(async (url, options) => {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+    spy.mockImplementation(async (_url, options) => {
+      await new Promise(resolve => {
+        setTimeout(resolve, 1000);
+      })
 
       if (options?.signal?.aborted) {
         const error = new Error("AbortError")
@@ -86,16 +62,16 @@ describe("useRequest", () => {
 
     const Main = () => {
       const { error, cancel, request } = useRequest({
-        initialUrl: "https://jsonplaceholder.typicode.com",
-        initialPath: "users",
-        initialData: [],
-        initialQueries: {},
-        initialOptions: {},
-        resolver: (response) => response.json()
+        initialState: [],
+        resolver: (response) => {
+          return response.json();
+        }
       })
 
       useEffect(() => {
-        request()
+        request({
+          url: "https://jsonplaceholder.typicode.com/users"
+        })
       }, [request])
 
       useEffect(() => {
@@ -131,16 +107,14 @@ describe("useRequest", () => {
 
     const Main = () => {
       const { error, request } = useRequest({
-        initialUrl: "https://jsonplaceholder.typicode.com",
-        initialPath: "users",
-        initialData: [],
-        initialQueries: {},
-        initialOptions: {},
+        initialState: [],
         resolver: response => response.json()
       })
 
       useEffect(() => {
-        request()
+        request({
+          url: "https://jsonplaceholder.typicode.com/users"
+        })
       }, [request])
 
       if (error) {
