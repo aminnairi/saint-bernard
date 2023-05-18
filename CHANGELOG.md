@@ -2,9 +2,14 @@
 
 ## Versions
 
+- [`1.0.0`](#100)
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 1.0.0
+
+- Simplify the use of this library ([#38](https://github.com/aminnairi/saint-bernard/issues/38))
 
 ## 0.3.0
 
