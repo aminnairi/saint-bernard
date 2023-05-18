@@ -12,22 +12,17 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 - [Uninstallation](#uninstallation)
 - [Usage](#usage)
 - [API](#api)
-  - [CancelError](#cancelerror)
-    - [Interface](#interface)
-    - [Example](#example)
   - [useRequest](#userequest)
-    - [Interface](#interface-1)
-    - [Examples](#examples)
-      - [request](#request)
-      - [cancel](#cancel)
-      - [options](#options)
-      - [queries](#queries)
-      - [path](#path)
-      - [url](#url)
-      - [data](#data)
-      - [error](#error)
+    - [request](#request)
+      - [state](#state)
+      - [setState](#setstate)
       - [loading](#loading)
-      - [abortControler](#abortcontroler)
+      - [setLoading](#setloading)
+      - [error](#error)
+      - [setError](#seterror)
+      - [abortController](#abortcontroller)
+      - [setAbortController](#setabortcontroller)
+      - [cancel](#cancel)
 - [Changelog](#changelog)
 - [Code of conduct](#code-of-conduct)
 - [License](#license)
@@ -78,7 +73,7 @@ npm uninstall saint-bernard
 
 > Note: we recommend using [`zod`](https://www.npmjs.com/package/zod) for correctly checking at runtime the value received from a server.
 
-```tsx
+```typescript
 import React, { Fragment, useEffect } from "react"
 import { CancelError, useRequest } from "saint-bernard"
 import { z } from "zod"
@@ -91,26 +86,31 @@ const postsSchema = z.array(z.object({
 type Posts = z.infer<typeof postsSchema>
 
 export const Main = () => {
-  const { data, loading, error, request, cancel } = useRequest<Posts>({
-    initialPath: "users/1/posts",
-    initialUrl: "https://jsonplaceholder.typicode.com",
-    initialQueries: {
-      title: "sunt aut facere repellat provident occaecati excepturi optio reprehenderit"
-    },
-    initialData: [],
-    initialOptions: {
-      method: "GET",
-      headers: {
-        "Accept": "application/json"
-      }
-    },
+  const { state, loading, error, request, cancel } = useRequest<Posts>({
+    initialState: [],
     resolver: async (response) => {
       const posts = await response.json()
       return postsSchema.parse(posts)
     }
   })
+
+  const requestUsers = useCallback(() => {
+    request({
+      url: "https://jsonplaceholder.tyipcode.com/users",
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      }
+    })
+  }, []);
   
-  useEffect(() => cancel, [cancel])
+  useEffect(() => {
+    requestUsers();
+
+    return () => {
+      cancel();
+    };
+  }, [])
 
   if (loading) {
     return (
@@ -127,7 +127,7 @@ export const Main = () => {
         <Fragment>
           <h1>Canceled</h1>
           <p>Request has been canceled</p>
-          <button onClick={request}>Retry?</button>
+          <button onClick={requestUsers}>Retry?</button>
         </Fragment>
       )
     }
@@ -136,14 +136,14 @@ export const Main = () => {
       <Fragment>
         <h1>Error</h1>
         <p>{error.message}</p>
-        <button onClick={request}>Retry?</button>
+        <button onClick={requestUsers}>Retry?</button>
       </Fragment>
     )
   }
 
   return (
     <Fragment>
-      <button onClick={request}>Fetch posts</button>
+      <button onClick={requestUsers}>Refresh</button>
       <table>
         <tbody>
           {data.map(article => (
@@ -162,506 +162,393 @@ export const Main = () => {
 
 ## API
 
-[Back to summary](#summary).
-
-### CancelError
-
-[Back to summary](#summary).
-
-#### Interface
-
-```typescript
-export declare class CancelError extends Error {
-    constructor(message: string);
-}
-```
-
-[Back to summary](#summary).
-
-#### Example
-
-```tsx
-import React, { useEffect } from "react"
-import { CancelError, useRequest } from "saint-bernard"
-import { z } from "zod"
-
-const usersSchema = z.array(z.object({
-  id: z.number()
-}))
-
-type Users = z.infer<typeof usersSchema>
-
-export const Main = () => {
-  const { error, loading, data, request, cancel } = useRequest<Users>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com",
-    initialQueries: {},
-    initialOptions: {},
-    initialData: [],
-    resolver: async response => {
-      const users = await response.json()
-      return usersSchema.parse(users)
-    } 
-  })
-  
-  useEffect(() => cancel, [cancel]) 
-  
-  if (loading) {
-    return (
-      <button onClick={cancel}>Cancel</button>
-    )
-  }
-  
-  if (error) {
-    if (error instanceof CancelError) {
-      return (
-        <p>Canceled</p>
-      )
-    }
-    
-    return (
-      <p>Error</p>
-    )
-  }
-  
-  return (
-    <button onClick={request}>Request</button>
-  )
-}
-```
-
-[Back to summary](#summary).
-
 ### useRequest
 
-[Back to summary](#summary).
-
-#### Interface
+```typescript
+export interface RequestOptions extends RequestInit {
+  url: URL | RequestInfo
+}
+```
 
 ```typescript
-export interface UseRequestOptions<Data> {
-    initialPath: string;
-    initialUrl: string;
-    initialQueries: Record<string, string>;
-    initialData: Data;
-    initialOptions: RequestInit;
-    resolver: (response: Response) => Promise<Data>;
+import React from "react";
+import { useRequest, UseRequestOptions } from "./hooks/";
+
+interface User {
+  id: number;
 }
 
-export declare const useRequest: <Data>(options: UseRequestOptions<Data>) => {
-    options: RequestInit;
-    stringifiedQueries: string;
-    queries: Record<string, string>;
-    path: string;
-    url: string;
-    data: Data;
-    error: Error | null;
-    loading: boolean;
-    setQueries: import("react").Dispatch<import("react").SetStateAction<Record<string, string>>>;
-    setUrl: import("react").Dispatch<import("react").SetStateAction<string>>;
-    setPath: import("react").Dispatch<import("react").SetStateAction<string>>;
-    setData: import("react").Dispatch<import("react").SetStateAction<Data>>;
-    setError: import("react").Dispatch<import("react").SetStateAction<Error | null>>;
-    setLoading: import("react").Dispatch<import("react").SetStateAction<boolean>>;
-    abortController: AbortController;
-    setAbortController: import("react").Dispatch<import("react").SetStateAction<AbortController>>;
-    setOptions: import("react").Dispatch<import("react").SetStateAction<RequestInit>>;
-    cancel: () => void;
-    request: () => void;
+const options: UseRequestOptions<Array<User>> = {
+  initialState: [],
+  resolver: async (response) => {
+    const users = await response.json();
+    return users;
+  }
 };
-```
 
-[Back to summary](#summary).
-
-#### Examples
-
-[Back to summary](#summary).
-
-##### request
-
-```tsx
-import React from "react"
-import { CancelError, useRequest } from "saint-bernard"
-
-export const Page = () => {
-  const { request } = useRequest<null>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com",
-    initialData: null,
-    initialQueries: {},
-    initialOptions: {},
-    resolver: async response => null
-  })
+export const Main = () => {
+  useRequest<Array<User>>(options);
 
   return (
-    <button onClick={request}>Request</button>
-  )
+    <div>
+      Saint-Bernard
+    </div>
+  );
 }
 ```
 
-[Back to summary](#summary).
+#### request
 
-##### cancel
+```typescript
+export interface RequestOptions extends RequestInit {
+  url: URL | RequestInfo
+}
+```
 
-```tsx
-import React, { Fragment, useEffect } from "react"
-import { CancelError, useRequest } from "saint-bernard"
+```typescript
+import React, { useEffect } from "react";
+import { useRequest, RequestOptions } from "./hooks/";
 
-export const Page = () => {
-  const { loading, error, request, cancel } = useRequest<null>({
-    initialPath: "",
-    initialUrl: "",
-    initialData: null,
-    initialQueries: {},
-    initialOptions: {},
-    resolver: async response => null
-  })
-  
-  useEffect(() => cancel, [cancel])
+interface User {
+  id: number;
+}
 
-  if (loading) {
-    return (
-      <Fragment>
-        <h1>Loading</h1>
-        <button onClick={cancel}>Cancel</button>
-      </Fragment>
-    )
+const options: RequestOptions = {
+  url: "https://jsonplaceholder.typicode.com/users",
+  method: "GET",
+  mode: "cors",
+  headers: {
+    Accept: "application/json"
   }
+}
 
-  if (error) {
-    if (error instanceof CancelError) {
-      return (
-        <Fragment>
-          <h1>Canceled</h1>
-          <button onClick={request}>Retry?</button>
-        </Fragment>
-      )
+export const Main = () => {
+  const { request } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
     }
+  });
 
-    return (
-      <Fragment>
-        <h1>Error</h1>
-        <button onClick={request}>Retry?</button>
-      </Fragment>
-    )
-  }
+  useEffect(() => {
+    request(options);
+  }, []);
 
   return (
-    <Fragment>
-      <button onClick={request}>Request</button>
-    </Fragment>
-  )
+    <div>
+      Saint-Bernard
+    </div>
+  );
 }
 ```
 
-[Back to summary](#summary).
+##### state
 
-##### options
+```typescript
+import React from "react";
+import { useRequest } from "./hooks/";
 
-```tsx
-import React, { Fragment, useCallback } from "react"
-import { useRequest } from "saint-bernard"
+interface User {
+  id: number;
+}
 
-export const Page = () => {
-  const { options, setOptions, request } = useRequest<null>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com/users",
-    initialData: null,
-    initialQueries: {},
-    initialOptions: {
-      method: "GET"
-    },
-    resolver: async response => {
-      return null
+export const Main = () => {
+  const { state } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
     }
-  })
-
-  const updateOptions = useCallback(() => {
-    setOptions(oldOptions => ({
-      ...oldOptions,
-      headers: {
-        "Accept": "application/json"
-      }
-    }))
-  }, [setOptions])
+  });
 
   return (
-    <Fragment>
-      <p>{JSON.stringify(options)}</p>
-      <button onClick={updateOptions}>Update options</button>
-      <button onClick={request}>Request</button>
-    </Fragment>
-  )
+    <div>
+      {JSON.stringify(state)}
+    </div>
+  );
 }
 ```
 
-[Back to summary](#summary).
+##### setState
 
-##### queries
+```typescript
+import React, { useEffect } from "react";
+import { useRequest } from "./hooks/";
 
-```tsx
-import React, { Fragment, useCallback } from "react"
-import { useRequest } from "saint-bernard"
+interface User {
+  id: number;
+}
 
-export const Page = () => {
-  const { queries, stringifiedQueries, setQueries, request } = useRequest<null>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com/users",
-    initialData: null,
-    initialQueries: {},
-    initialOptions: {},
-    resolver: async response => {
-      return null
+export const Main = () => {
+  const { setState } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
     }
-  })
+  });
 
-  const queryByName = useCallback(() => {
-    setQueries(oldQueries => ({
-      ...oldQueries,
-      name: "Bret"
-    }))
-  }, [setQueries])
-
-  const queryLimit = useCallback(() => {
-    setQueries(oldQueries => ({
-      ...oldQueries,
-      limit: "5"
-    }))
-  }, [setQueries])
+  useEffect(() => {
+    setState([]);
+  }, []);
 
   return (
-    <Fragment>
-      <p>{JSON.stringify(queries)}</p>
-      <p>{stringifiedQueries}</p>
-      <button onClick={queryByName}>Add name query</button>
-      <button onClick={queryLimit}>Limit to 5</button>
-      <button onClick={request}>Request</button>
-    </Fragment>
-  )
+    <div>
+      Saint-Bernard
+    </div>
+  );
 }
 ```
-
-[Back to summary](#summary).
-
-##### path
-
-```tsx
-import React, { Fragment, useCallback } from "react"
-import { useRequest } from "saint-bernard"
-
-export const Page = () => {
-  const { path, setPath, request } = useRequest<null>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com/users",
-    initialData: null,
-    initialQueries: {},
-    initialOptions: {},
-    resolver: async response => {
-      return null
-    }
-  })
-
-  const updatePath = useCallback(() => {
-    setPath("posts")
-  }, [setPath])
-
-  return (
-    <Fragment>
-      <p>{path}</p>
-      <button onClick={updatePath}>Update path</button>
-      <button onClick={request}>Request</button>
-    </Fragment>
-  )
-}
-```
-
-[Back to summary](#summary).
-
-##### url
-
-```tsx
-import React, { Fragment, useCallback } from "react"
-import { useRequest } from "saint-bernard"
-
-export const Page = () => {
-  const { url, setUrl, request } = useRequest<null>({
-    initialPath: "",
-    initialUrl: "https://jsonplaceholder.typicode.com/users",
-    initialData: null,
-    initialQueries: {},
-    initialOptions: {},
-    resolver: async response => {
-      return null
-    }
-  })
-
-  const updateUrl = useCallback(() => {
-    setUrl("https://ipapi.co/json")
-  }, [setUrl])
-
-  return (
-    <Fragment>
-      <p>{url}</p>
-      <button onClick={updateUrl}>Update URL</button>
-      <button onClick={request}>Request</button>
-    </Fragment>
-  )
-}
-```
-
-[Back to summary](#summary).
-
-##### data
-
-```tsx
-import React, { Fragment, useCallback } from "react"
-import { z } from "zod"
-import { useRequest } from "saint-bernard"
-
-const usersSchema = z.array(z.object({
-  id: z.number()
-}))
-
-type Users = z.infer<typeof usersSchema>
-
-export const Page = () => {
-  const { data, setData, request } = useRequest<Users>({
-    initialPath: "users",
-    initialUrl: "https://jsonplaceholder.typicode.com",
-    initialData: [],
-    initialQueries: {},
-    initialOptions: {},
-    resolver: async response => {
-      const users = await response.json()
-      return usersSchema.parse(users)
-    }
-  })
-
-  const reset = useCallback(() => {
-    setData([])
-  }, [setData])
-
-  return (
-    <Fragment>
-      <p>{JSON.stringify(data)}</p>
-      <button onClick={reset}>Reset</button>
-      <button onClick={request}>Request</button>
-    </Fragment>
-  )
-}
-```
-
-[Back to summary](#summary).
-
-##### error
-
-```tsx
-import React, { Fragment, useCallback } from "react"
-import { useRequest } from "saint-bernard"
-
-export const Page = () => {
-  const { error, setError, request } = useRequest<null>({
-    initialPath: "",
-    initialUrl: "",
-    initialData: null,
-    initialQueries: {},
-    initialOptions: {},
-    resolver: async response => {
-      throw new Error("error")
-    }
-  })
-
-  const reset = useCallback(() => {
-    setError(null)
-  }, [setError])
-
-  if (error) {
-    return (
-      <Fragment>
-        <h1>Error</h1>
-        <button onClick={reset}>Reset</button>
-      </Fragment>
-    )
-  }
-
-  return (
-    <Fragment>
-      <button onClick={request}>Request</button>
-    </Fragment>
-  )
-}
-```
-
-[Back to summary](#summary).
 
 ##### loading
 
-```tsx
-import React, { useCallback } from "react"
-import { useRequest } from "saint-bernard"
+```typescript
+import React from "react";
+import { useRequest } from "./hooks/";
 
-export const Page = () => {
-  const { loading, setLoading } = useRequest<null>({
-    initialPath: "",
-    initialUrl: "",
-    initialData: null,
-    initialQueries: {},
-    initialOptions: {},
-    resolver: async response => null
-  })
+interface User {
+  id: number;
+}
 
-  const load = useCallback(() => {
-    setLoading(true)
-  }, [setLoading])
-
-  const unload = useCallback(() => {
-    setLoading(false)
-  }, [setLoading])
+export const Main = () => {
+  const { loading } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
+    }
+  });
 
   if (loading) {
     return (
-      <button onClick={unload}>Stop loading</button>
+      <div>Loading...</div>
     )
   }
 
   return (
-    <button onClick={load}>Load</button>
-  )
+    <div>
+      Saint-Bernard
+    </div>
+  );
 }
 ```
 
-[Back to summary](#summary).
+##### setLoading
 
-##### abortControler
+```typescript
+import React, { useEffect } from "react";
+import { useRequest } from "./hooks/";
 
-```tsx
-import React, { Fragment, useCallback } from "react"
-import { useRequest } from "saint-bernard"
+interface User {
+  id: number;
+}
 
-export const Page = () => {
-  const { abortController, setAbortController } = useRequest<null>({
-    initialPath: "",
-    initialUrl: "",
-    initialData: null,
-    initialQueries: {},
-    initialOptions: {},
-    resolver: async response => null
-  })
+export const Main = () => {
+  const { setLoading } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
+    }
+  });
 
-  const updateAbortController = useCallback(() => {
-    setAbortController(new AbortController())
-  }, [setAbortController])
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+  }, []);
 
   return (
-    <Fragment>
-      <p>{JSON.stringify(abortController)}</p>
-      <button onClick={updateAbortController}>Change abort controller</button>
-    </Fragment>
-  )
+    <div>
+      Saint-Bernard
+    </div>
+  );
 }
 ```
 
-[Back to summary](#summary).
+##### error
+
+```typescript
+import React from "react";
+import { useRequest } from "./hooks/";
+
+interface User {
+  id: number;
+}
+
+export const Main = () => {
+  const { error } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
+    }
+  });
+
+  if (error) {
+    return (
+      <div>
+        {error.message}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      Saint-Bernard
+    </div>
+  );
+}
+```
+
+##### setError
+
+```typescript
+import React, { useEffect } from "react";
+import { useRequest } from "./hooks/";
+
+interface User {
+  id: number;
+}
+
+export const Main = () => {
+  const { setError } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
+    }
+  });
+
+  useEffect(() => {
+    setTimeout(() => {
+      setError(null);
+    }, 5000);
+  }, []);
+
+  return (
+    <div>
+      Saint-Bernard
+    </div>
+  );
+}
+```
+
+##### abortController
+
+```typescript
+import React, { useEffect } from "react";
+import { useRequest } from "./hooks/";
+
+interface User {
+  id: number;
+}
+
+export const Main = () => {
+  const { abortController } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
+    }
+  });
+
+  useEffect(() => {
+    setTimeout(() => {
+      abortController.abort();
+    }, 5000);
+  }, []);
+
+  return (
+    <div>
+      Saint-Bernard
+    </div>
+  );
+}
+```
+
+##### setAbortController
+
+```typescript
+import React, { useEffect, useMemo } from "react";
+import { useRequest } from "./hooks/";
+
+interface User {
+  id: number;
+}
+
+export const Main = () => {
+  const abortController = useMemo(() => new AbortController(), []);
+
+  const { setAbortController } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
+    }
+  });
+
+  useEffect(() => {
+    setAbortController(new AbortController());
+
+    setTimeout(() => {
+      abortController.abort();
+    }, 5000);
+  }, []);
+
+  return (
+    <div>
+      Saint-Bernard
+    </div>
+  );
+}
+```
+
+##### cancel
+
+```typescript
+import React, { useEffect } from "react";
+import { useRequest, CancelError } from "./hooks/";
+
+interface User {
+  id: number;
+}
+
+export const Main = () => {
+  const { cancel, error } = useRequest<Array<User>>({
+    initialState: [],
+    resolver: async (response) => {
+      const users = await response.json();
+      return users;
+    }
+  });
+
+  useEffect(() => {
+    setTimeout(() => {
+      cancel();
+    }, 5000);
+  }, []);
+
+  if (error) {
+    if (error instanceof CancelError) {
+      return (
+        <div>Request cancelled</div>
+      );
+    }
+
+    return (
+      <div>Request failed because {error.message}</div>
+    );
+  }
+
+  return (
+    <div>
+      Saint-Bernard
+    </div>
+  );
+}
+```
 
 ## Changelog
 
