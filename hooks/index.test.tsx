@@ -289,7 +289,7 @@ describe("useStatelessRequest", () => {
   test("It should work with an external state", async () => {
     const spy = vi.spyOn(window, "fetch")
 
-    spy.mockImplementation(() => Promise.resolve(new Response(JSON.stringify(123))))
+    spy.mockImplementation(() => Promise.resolve(new Response("123")))
 
     const Main = () => {
       const [state, setState] = useState("");
@@ -300,6 +300,8 @@ describe("useStatelessRequest", () => {
           url: "https://jsonplaceholder.typicode.com/users",
           onResponse: async response => {
             const text = await response.text();
+
+            console.log({ text });
 
             setState(text);
           }
@@ -319,7 +321,7 @@ describe("useStatelessRequest", () => {
 
     const { container } = render(<Main />)
 
-    await new Promise(resolve => setTimeout(resolve, 1))
+    await new Promise(resolve => setTimeout(resolve, 100))
 
     expect(container.innerText).toEqual("123")
 
