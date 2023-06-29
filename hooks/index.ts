@@ -8,7 +8,7 @@ export class CancelError extends Error {
 }
 
 export interface UseRequestOptions<State> {
-  initialState: State;
+  initialState?: State;
 }
 
 export interface RequestOptions<State> extends RequestInit {
@@ -16,11 +16,11 @@ export interface RequestOptions<State> extends RequestInit {
   onResponse?: (response: Response) => Promise<State>;
 }
 
-export const useRequest = <Data>({ initialState }: UseRequestOptions<Data>) => {
+export const useRequest = <Data>(options?: UseRequestOptions<Data>) => {
   const [error, setError] = useState<Error | null>(null)
   const [loading, setLoading] = useState(false)
   const [abortController, setAbortController] = useState(new AbortController())
-  const [state, setState] = useState(initialState)
+  const [state, setState] = useState(options?.initialState)
 
   const cancel = useCallback(() => {
     abortController.abort()
