@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { z } from "zod"
-import { CancelError, useRequest } from "../../hooks"
+import { CancelError, useStatefulRequest } from "../../hooks"
 
 const userSchema = z.object({
   id: z.number(),
@@ -19,21 +19,29 @@ export const UserPage = () => {
 
   const navigate = useNavigate()
 
-  const { data, loading, error, cancel, request } = useRequest<User | null>({
-    initialPath: `users/${user}`,
-    initialUrl: "https://jsonplaceholder.typicode.com",
-    initialQueries: {},
-    initialOptions: {},
-    initialData: null,
-    resolver: async response => {
-      const user = await response.json()
-      return userSchema.parse(user)
-    }
+  const { state, loading, error, cancel, request } = useStatefulRequest<User | null>({
+    initialState: null
   })
 
   const goTo = useCallback((path: string) => () => {
     navigate(path)
   }, [navigate])
+
+  const getUser = useCallback(() => {
+    request({
+      url: `https://jsonplaceholder.typicode.com/users/${user}`,
+      method: "GET",
+      headers: {
+        "Accept": "application/json"
+      },
+      onResponse: async response => {
+        const json = await response.json();
+        const parsed = userSchema.parse(json)
+
+        return parsed;
+      }
+    });
+  }, [user]);
 
   useEffect(() => cancel, [cancel])
 
@@ -53,7 +61,7 @@ export const UserPage = () => {
         <Fragment>
           <h1>Canceled</h1>
           <p>Request cancled</p>
-          <button onClick={request}>Retry?</button>
+          <button onClick={getUser}>Retry?</button>
         </Fragment>
       )
     }
@@ -63,7 +71,7 @@ export const UserPage = () => {
         <h1>Error</h1>
         <p>An error occured</p>
         <small>{error.message}</small>
-        <button onClick={request}>Retry?</button>
+        <button onClick={getUser}>Retry?</button>
       </Fragment>
     )
   }
@@ -71,32 +79,32 @@ export const UserPage = () => {
   return (
     <Fragment>
       <h1>User#{user}</h1>
-      <button onClick={request}>Fetch informations</button>
-      {data === null && (
+      <button onClick={getUser}>Fetch informations</button>
+      {state === null && (
         <p>No informations to show yet</p>
       )}
-      {data !== null && (
+      {state !== null && (
         <table>
           <tbody>
             <tr>
               <td>Name</td>
-              <td>{data.name}</td>
+              <td>{state.name}</td>
             </tr>
             <tr>
               <td>Username</td>
-              <td>{data.username}</td>
+              <td>{state.username}</td>
             </tr>
             <tr>
               <td>Phone</td>
-              <td>{data.phone}</td>
+              <td>{state.phone}</td>
             </tr>
             <tr>
               <td>Website</td>
-              <td>{data.website}</td>
+              <td>{state.website}</td>
             </tr>
             <tr>
               <td>Email</td>
-              <td>{data.email}</td>
+              <td>{state.email}</td>
             </tr>
             <tr>
               <td>Posts</td>
