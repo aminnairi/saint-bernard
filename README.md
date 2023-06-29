@@ -87,11 +87,7 @@ type Posts = z.infer<typeof postsSchema>
 
 export const Main = () => {
   const { state, loading, error, request, cancel } = useRequest<Posts>({
-    initialState: [],
-    resolver: async (response) => {
-      const posts = await response.json()
-      return postsSchema.parse(posts)
-    }
+    initialState: []
   })
 
   const requestUsers = useCallback(() => {
@@ -100,6 +96,10 @@ export const Main = () => {
       method: "GET",
       headers: {
         Accept: "application/json"
+      },
+      onResponse: async response => {
+        const json = await response.json();
+        return json;
       }
     })
   }, []);
@@ -165,25 +165,21 @@ export const Main = () => {
 ### useRequest
 
 ```typescript
-export interface RequestOptions extends RequestInit {
-  url: URL | RequestInfo
+export interface UseRequestOptions<State> {
+  initialState?: State;
 }
 ```
 
 ```typescript
 import React from "react";
-import { useRequest, UseRequestOptions } from "./hooks/";
+import { useRequest, UseRequestOptions } from "saint-bernard";
 
 interface User {
   id: number;
 }
 
 const options: UseRequestOptions<Array<User>> = {
-  initialState: [],
-  resolver: async (response) => {
-    const users = await response.json();
-    return users;
-  }
+  initialState: []
 };
 
 export const Main = () => {
@@ -200,14 +196,15 @@ export const Main = () => {
 #### request
 
 ```typescript
-export interface RequestOptions extends RequestInit {
-  url: URL | RequestInfo
+export interface RequestOptions<State> extends RequestInit {
+  url: URL | RequestInfo,
+  onResponse?: (response: Response) => Promise<State>;
 }
 ```
 
 ```typescript
 import React, { useEffect } from "react";
-import { useRequest, RequestOptions } from "./hooks/";
+import { useRequest, RequestOptions } from "saint-bernard";
 
 interface User {
   id: number;
@@ -224,15 +221,17 @@ const options: RequestOptions = {
 
 export const Main = () => {
   const { request } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
+    initialState: []
   });
 
   useEffect(() => {
-    request(options);
+    request({
+      ...options,
+      onResponse: async response => {
+        const users = await response.json();
+        return users;
+      }
+    });
   }, []);
 
   return (
@@ -247,20 +246,14 @@ export const Main = () => {
 
 ```typescript
 import React from "react";
-import { useRequest } from "./hooks/";
+import { useRequest } from "saint-bernard";
 
 interface User {
   id: number;
 }
 
 export const Main = () => {
-  const { state } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
-  });
+  const { state } = useRequest<Array<User>>();
 
   return (
     <div>
@@ -274,7 +267,7 @@ export const Main = () => {
 
 ```typescript
 import React, { useEffect } from "react";
-import { useRequest } from "./hooks/";
+import { useRequest } from "saint-bernard";
 
 interface User {
   id: number;
@@ -282,11 +275,7 @@ interface User {
 
 export const Main = () => {
   const { setState } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
+    initialState: []
   });
 
   useEffect(() => {
@@ -305,20 +294,10 @@ export const Main = () => {
 
 ```typescript
 import React from "react";
-import { useRequest } from "./hooks/";
-
-interface User {
-  id: number;
-}
+import { useRequest } from "saint-bernard";
 
 export const Main = () => {
-  const { loading } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
-  });
+  const { loading } = useRequest();
 
   if (loading) {
     return (
@@ -338,20 +317,10 @@ export const Main = () => {
 
 ```typescript
 import React, { useEffect } from "react";
-import { useRequest } from "./hooks/";
-
-interface User {
-  id: number;
-}
+import { useRequest } from "saint-bernard";
 
 export const Main = () => {
-  const { setLoading } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
-  });
+  const { setLoading } = useRequest();
 
   useEffect(() => {
     setTimeout(() => {
@@ -371,20 +340,10 @@ export const Main = () => {
 
 ```typescript
 import React from "react";
-import { useRequest } from "./hooks/";
-
-interface User {
-  id: number;
-}
+import { useRequest } from "saint-bernard";
 
 export const Main = () => {
-  const { error } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
-  });
+  const { error } = useRequest();
 
   if (error) {
     return (
@@ -406,20 +365,10 @@ export const Main = () => {
 
 ```typescript
 import React, { useEffect } from "react";
-import { useRequest } from "./hooks/";
-
-interface User {
-  id: number;
-}
+import { useRequest } from "saint-bernard";
 
 export const Main = () => {
-  const { setError } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
-  });
+  const { setError } = useRequest();
 
   useEffect(() => {
     setTimeout(() => {
@@ -439,20 +388,10 @@ export const Main = () => {
 
 ```typescript
 import React, { useEffect } from "react";
-import { useRequest } from "./hooks/";
-
-interface User {
-  id: number;
-}
+import { useRequest } from "saint-bernard";
 
 export const Main = () => {
-  const { abortController } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
-  });
+  const { abortController } = useRequest();
 
   useEffect(() => {
     setTimeout(() => {
@@ -472,22 +411,12 @@ export const Main = () => {
 
 ```typescript
 import React, { useEffect, useMemo } from "react";
-import { useRequest } from "./hooks/";
-
-interface User {
-  id: number;
-}
+import { useRequest } from "saint-bernard";
 
 export const Main = () => {
   const abortController = useMemo(() => new AbortController(), []);
 
-  const { setAbortController } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
-  });
+  const { setAbortController } = useRequest();
 
   useEffect(() => {
     setAbortController(new AbortController());
@@ -509,20 +438,10 @@ export const Main = () => {
 
 ```typescript
 import React, { useEffect } from "react";
-import { useRequest, CancelError } from "./hooks/";
-
-interface User {
-  id: number;
-}
+import { useRequest, CancelError } from "saint-bernard";
 
 export const Main = () => {
-  const { cancel, error } = useRequest<Array<User>>({
-    initialState: [],
-    resolver: async (response) => {
-      const users = await response.json();
-      return users;
-    }
-  });
+  const { cancel, error } = useRequest();
 
   useEffect(() => {
     setTimeout(() => {
