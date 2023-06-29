@@ -2,11 +2,16 @@
 
 ## Versions
 
+- [`3.0.0`](#300)
 - [`2.0.0`](#200)
 - [`1.0.0`](#100)
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 3.0.0
+
+- Split the hook in a stateful & stateless hook ([#46](https://github.com/aminnairi/saint-bernard/pull/46))
 
 ## 2.0.0
 
