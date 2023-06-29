@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { CancelError, useRequest } from "../../../hooks"
+import { CancelError, useStatefulRequest } from "../../../hooks"
 import { z } from "zod"
 
 const postsSchema = z.array(z.object({
@@ -17,22 +17,25 @@ export const UsersUserPostsPage = () => {
 
   const navigate = useNavigate()
 
-  const { data, loading, error, request, cancel } = useRequest<Posts>({
-    initialPath: `users/${user}/posts`,
-    initialUrl: "https://jsonplaceholder.typicode.com",
-    initialQueries: {},
-    initialData: [],
-    initialOptions: {
+  const { state, loading, error, request, cancel } = useStatefulRequest<Posts>({
+    initialState: []
+  })
+
+  const getUserPosts = useCallback(() => {
+    request({
+      url: `https://jsonplaceholder.typicode.com/users/${user}/posts`,
       method: "GET",
       headers: {
         "Accept": "application/json"
+      },
+      onResponse: async response => {
+        const json = await response.json();
+        const parsed = postsSchema.parse(json)
+
+        return parsed;
       }
-    },
-    resolver: async (response) => {
-      const posts = await response.json()
-      return postsSchema.parse(posts)
-    }
-  })
+    });
+  }, []);
 
   const goTo = useCallback((path: string) => () => {
     navigate(path)
@@ -50,12 +53,12 @@ export const UsersUserPostsPage = () => {
   }
 
   if (error) {
-    if (error instanceof CancelError)  {
+    if (error instanceof CancelError) {
       return (
         <Fragment>
           <h1>Canceled</h1>
           <p>Request has been canceled</p>
-          <button onClick={request}>Retry?</button>
+          <button onClick={getUserPosts}>Retry?</button>
         </Fragment>
       )
     }
@@ -64,18 +67,18 @@ export const UsersUserPostsPage = () => {
       <Fragment>
         <h1>Error</h1>
         <p>{error.message}</p>
-        <button onClick={request}>Retry?</button>
+        <button onClick={getUserPosts}>Retry?</button>
       </Fragment>
     )
   }
 
   return (
     <Fragment>
-      <button onClick={request}>Fetch posts</button>
-      {data.length === 0 && (
+      <button onClick={getUserPosts}>Fetch posts</button>
+      {state.length === 0 && (
         <p>No posts to show</p>
       )}
-      {data.length !== 0 && (
+      {state.length !== 0 && (
         <table>
           <thead>
             <tr>
@@ -85,7 +88,7 @@ export const UsersUserPostsPage = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map(post => (
+            {state.map(post => (
               <tr key={post.id}>
                 <td>{post.title}</td>
                 <td>{post.body}</td>
