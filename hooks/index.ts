@@ -7,26 +7,31 @@ export class CancelError extends Error {
   }
 }
 
-export interface UseRequestOptions<State> {
-  initialState?: State;
+export interface UseStatefulRequestOptions<State> {
+  initialState: State
 }
 
-export interface RequestOptions<State> extends RequestInit {
+export interface StatefulRequestOptions<State> extends RequestInit {
   url: URL | RequestInfo,
-  onResponse?: (response: Response) => Promise<State>;
+  onResponse: (response: Response) => Promise<State>;
 }
 
-export const useRequest = <Data>(options?: UseRequestOptions<Data>) => {
+export interface StatelessRequestOptions extends RequestInit {
+  url: URL | RequestInfo,
+  onResponse?: (response: Response) => void;
+}
+
+export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<State>) => {
   const [error, setError] = useState<Error | null>(null)
   const [loading, setLoading] = useState(false)
+  const [state, setState] = useState<State>(options.initialState)
   const [abortController, setAbortController] = useState(new AbortController())
-  const [state, setState] = useState(options?.initialState)
 
   const cancel = useCallback(() => {
     abortController.abort()
   }, [abortController])
 
-  const request = useCallback(({ url, onResponse, ...options }: RequestOptions<Data>) => {
+  const request = useCallback(({ url, onResponse, ...options }: StatefulRequestOptions<State>) => {
     const newAbortController = new AbortController()
 
     setAbortController(newAbortController)
@@ -37,13 +42,9 @@ export const useRequest = <Data>(options?: UseRequestOptions<Data>) => {
       ...options,
       signal: newAbortController.signal
     }).then(response => {
-      if (onResponse) {
-        return onResponse(response);
-      }
+      return onResponse(response);
     }).then(newData => {
-      if (newData) {
-        setState(newData);
-      }
+      setState(newData);
     }).catch(error => {
       if (error instanceof Error && error.name === "AbortError") {
         setError(new CancelError("Request has been canceled"))
@@ -61,6 +62,53 @@ export const useRequest = <Data>(options?: UseRequestOptions<Data>) => {
     error,
     loading,
     setState,
+    setError,
+    setLoading,
+    abortController,
+    setAbortController,
+    cancel,
+    request
+  }
+}
+
+export const useStatelessRequest = () => {
+  const [error, setError] = useState<Error | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [abortController, setAbortController] = useState(new AbortController())
+
+  const cancel = useCallback(() => {
+    abortController.abort()
+  }, [abortController])
+
+  const request = useCallback(({ url, onResponse, ...options }: StatelessRequestOptions) => {
+    const newAbortController = new AbortController()
+
+    setAbortController(newAbortController)
+    setError(null)
+    setLoading(true)
+
+    fetch(url, {
+      ...options,
+      signal: newAbortController.signal
+    }).then(response => {
+      if (onResponse) {
+        return onResponse(response);
+      }
+    }).catch(error => {
+      if (error instanceof Error && error.name === "AbortError") {
+        setError(new CancelError("Request has been canceled"))
+        return
+      }
+
+      setError(error)
+    }).finally(() => {
+      setLoading(false)
+    })
+  }, []);
+
+  return {
+    error,
+    loading,
     setError,
     setLoading,
     abortController,
