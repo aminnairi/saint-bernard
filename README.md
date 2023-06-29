@@ -6,29 +6,6 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 
 ## Summary
 
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Uninstallation](#uninstallation)
-- [Usage](#usage)
-- [API](#api)
-  - [useRequest](#userequest)
-    - [request](#request)
-      - [state](#state)
-      - [setState](#setstate)
-      - [loading](#loading)
-      - [setLoading](#setloading)
-      - [error](#error)
-      - [setError](#seterror)
-      - [abortController](#abortcontroller)
-      - [setAbortController](#setabortcontroller)
-      - [cancel](#cancel)
-- [Changelog](#changelog)
-- [Code of conduct](#code-of-conduct)
-- [License](#license)
-- [Security](#security)
-- [Contributing](#contributing)
-
 ## Features
 
 - Close to the metal, configurable yet high-level enough to help you do more with less
@@ -71,210 +48,39 @@ npm uninstall saint-bernard
 
 ## Usage
 
-> Note: we recommend using [`zod`](https://www.npmjs.com/package/zod) for correctly checking at runtime the value received from a server.
+### Stateful
 
-```typescript
-import React, { Fragment, useEffect } from "react"
-import { CancelError, useRequest } from "saint-bernard"
-import { z } from "zod"
-
-const postsSchema = z.array(z.object({
-  body: z.string(),
-  id: z.number()
-}))
-
-type Posts = z.infer<typeof postsSchema>
-
-export const Main = () => {
-  const { state, loading, error, request, cancel } = useRequest<Posts>({
-    initialState: []
-  })
-
-  const requestUsers = useCallback(() => {
-    request({
-      url: "https://jsonplaceholder.tyipcode.com/users",
-      method: "GET",
-      headers: {
-        Accept: "application/json"
-      },
-      onResponse: async response => {
-        const json = await response.json();
-        return json;
-      }
-    })
-  }, []);
-  
-  useEffect(() => {
-    requestUsers();
-
-    return () => {
-      cancel();
-    };
-  }, [])
-
-  if (loading) {
-    return (
-      <Fragment>
-        <p>Loading...</p>
-        <button onClick={cancel}>Cancel</button>
-      </Fragment>
-    )
-  }
-
-  if (error) {
-    if (error instanceof CancelError)  {
-      return (
-        <Fragment>
-          <h1>Canceled</h1>
-          <p>Request has been canceled</p>
-          <button onClick={requestUsers}>Retry?</button>
-        </Fragment>
-      )
-    }
-
-    return (
-      <Fragment>
-        <h1>Error</h1>
-        <p>{error.message}</p>
-        <button onClick={requestUsers}>Retry?</button>
-      </Fragment>
-    )
-  }
-
-  return (
-    <Fragment>
-      <button onClick={requestUsers}>Refresh</button>
-      <table>
-        <tbody>
-          {data.map(article => (
-            <tr key={article.id}>
-              <td>{article.body}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </Fragment>
-  )
-}
-```
-
-[Back to summary](#summary).
-
-## API
-
-### useRequest
-
-```typescript
-export interface UseRequestOptions<State> {
-  initialState?: State;
-}
-```
+#### state
 
 ```typescript
 import React from "react";
-import { useRequest, UseRequestOptions } from "saint-bernard";
+import { useStatefulRequest } from "saint-bernard";
 
-interface User {
-  id: number;
-}
-
-const options: UseRequestOptions<Array<User>> = {
-  initialState: []
-};
-
-export const Main = () => {
-  useRequest<Array<User>>(options);
-
-  return (
-    <div>
-      Saint-Bernard
-    </div>
-  );
-}
-```
-
-#### request
-
-```typescript
-export interface RequestOptions<State> extends RequestInit {
-  url: URL | RequestInfo,
-  onResponse?: (response: Response) => Promise<State>;
-}
-```
-
-```typescript
-import React, { useEffect } from "react";
-import { useRequest, RequestOptions } from "saint-bernard";
-
-interface User {
-  id: number;
-}
-
-const options: RequestOptions = {
-  url: "https://jsonplaceholder.typicode.com/users",
-  method: "GET",
-  mode: "cors",
-  headers: {
-    Accept: "application/json"
-  }
-}
-
-export const Main = () => {
-  const { request } = useRequest<Array<User>>({
+export const App = () => {
+  const { state } = useStatefulRequest<Array<any>>({
     initialState: []
   });
 
-  useEffect(() => {
-    request({
-      ...options,
-      onResponse: async response => {
-        const users = await response.json();
-        return users;
-      }
-    });
-  }, []);
-
   return (
-    <div>
-      Saint-Bernard
-    </div>
+    <ul>
+      {state.map(user => (
+        <li key={user.id}>
+          {user.email}
+        </li>
+      ))}
+    </ul>
   );
-}
+};
 ```
 
-##### state
-
-```typescript
-import React from "react";
-import { useRequest } from "saint-bernard";
-
-interface User {
-  id: number;
-}
-
-export const Main = () => {
-  const { state } = useRequest<Array<User>>();
-
-  return (
-    <div>
-      {JSON.stringify(state)}
-    </div>
-  );
-}
-```
-
-##### setState
+#### setState
 
 ```typescript
 import React, { useEffect } from "react";
-import { useRequest } from "saint-bernard";
+import { useStatefulRequest } from "saint-bernard";
 
-interface User {
-  id: number;
-}
-
-export const Main = () => {
-  const { setState } = useRequest<Array<User>>({
+export const App = () => {
+  const { setState } = useStatefulRequest<Array<any>>({
     initialState: []
   });
 
@@ -283,190 +89,370 @@ export const Main = () => {
   }, []);
 
   return (
-    <div>
-      Saint-Bernard
-    </div>
+    <h1>Saint-Bernard</h1>
   );
-}
+};
 ```
 
-##### loading
-
-```typescript
-import React from "react";
-import { useRequest } from "saint-bernard";
-
-export const Main = () => {
-  const { loading } = useRequest();
-
-  if (loading) {
-    return (
-      <div>Loading...</div>
-    )
-  }
-
-  return (
-    <div>
-      Saint-Bernard
-    </div>
-  );
-}
-```
-
-##### setLoading
+#### request
 
 ```typescript
 import React, { useEffect } from "react";
-import { useRequest } from "saint-bernard";
+import { useStatefulRequest } from "saint-bernard";
 
-export const Main = () => {
-  const { setLoading } = useRequest();
+export const App = () => {
+  const { request } = useStatefulRequest<Array<any>>({
+    initialState: []
+  });
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
+    request({
+      url: "https://jsonplaceholder.typicode.com/posts",
+      method: "GET",
+      headers: {
+        "Accept": "application/json"
+      },
+      onResponse: async response => {
+        const users = await response.json();
+
+        return users;
+      }
+    });
   }, []);
 
   return (
-    <div>
-      Saint-Bernard
-    </div>
+    <h1>Saint-Bernard</h1>
   );
-}
+};
 ```
 
-##### error
-
-```typescript
-import React from "react";
-import { useRequest } from "saint-bernard";
-
-export const Main = () => {
-  const { error } = useRequest();
-
-  if (error) {
-    return (
-      <div>
-        {error.message}
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      Saint-Bernard
-    </div>
-  );
-}
-```
-
-##### setError
+#### cancel
 
 ```typescript
 import React, { useEffect } from "react";
-import { useRequest } from "saint-bernard";
+import { useStatefulRequest } from "saint-bernard";
 
-export const Main = () => {
-  const { setError } = useRequest();
-
-  useEffect(() => {
-    setTimeout(() => {
-      setError(null);
-    }, 5000);
-  }, []);
-
-  return (
-    <div>
-      Saint-Bernard
-    </div>
-  );
-}
-```
-
-##### abortController
-
-```typescript
-import React, { useEffect } from "react";
-import { useRequest } from "saint-bernard";
-
-export const Main = () => {
-  const { abortController } = useRequest();
+export const App = () => {
+  const { cancel } = useStatefulRequest<Array<any>>({
+    initialState: []
+  });
 
   useEffect(() => {
-    setTimeout(() => {
-      abortController.abort();
-    }, 5000);
-  }, []);
-
-  return (
-    <div>
-      Saint-Bernard
-    </div>
-  );
-}
-```
-
-##### setAbortController
-
-```typescript
-import React, { useEffect, useMemo } from "react";
-import { useRequest } from "saint-bernard";
-
-export const Main = () => {
-  const abortController = useMemo(() => new AbortController(), []);
-
-  const { setAbortController } = useRequest();
-
-  useEffect(() => {
-    setAbortController(new AbortController());
-
-    setTimeout(() => {
-      abortController.abort();
-    }, 5000);
-  }, []);
-
-  return (
-    <div>
-      Saint-Bernard
-    </div>
-  );
-}
-```
-
-##### cancel
-
-```typescript
-import React, { useEffect } from "react";
-import { useRequest, CancelError } from "saint-bernard";
-
-export const Main = () => {
-  const { cancel, error } = useRequest();
-
-  useEffect(() => {
-    setTimeout(() => {
+    return () => {
       cancel();
-    }, 5000);
+    };
   }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### error
+
+```typescript
+import React from "react";
+import { useStatefulRequest, CancelError } from "saint-bernard";
+
+export const App = () => {
+  const { error } = useStatefulRequest<Array<any>>({
+    initialState: []
+  });
 
   if (error) {
     if (error instanceof CancelError) {
-      return (
-        <div>Request cancelled</div>
-      );
+      return <h1>Request was cancelled</h1>;
     }
 
-    return (
-      <div>Request failed because {error.message}</div>
-    );
+    return <h1>Something went wrong: {error.message}</h1>;
   }
 
   return (
-    <div>
-      Saint-Bernard
-    </div>
+    <h1>Saint-Bernard</h1>
   );
-}
+};
+```
+
+#### setError
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatefulRequest } from "saint-bernard";
+
+export const App = () => {
+  const { setError } = useStatefulRequest<Array<any>>({
+    initialState: []
+  });
+
+  useEffect(() => {
+    setError(new Error("Something went wrong"));
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### loading
+
+```typescript
+import React from "react";
+import { useStatefulRequest } from "saint-bernard";
+
+export const App = () => {
+  const { loading } = useStatefulRequest<Array<any>>({
+    initialState: []
+  });
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### setLoading
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatefulRequest } from "saint-bernard";
+
+export const App = () => {
+  const { setLoading } = useStatefulRequest<Array<any>>({
+    initialState: []
+  });
+
+  useEffect(() => {
+    setLoading(true);
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### abortController
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatefulRequest } from "saint-bernard";
+
+export const App = () => {
+  const { abortController } = useStatefulRequest<Array<any>>({
+    initialState: []
+  });
+
+  useEffect(() => {
+    abortController.abort();
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### setAbortController
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatefulRequest } from "saint-bernard";
+
+export const App = () => {
+  const { setAbortController } = useStatefulRequest<Array<any>>({
+    initialState: []
+  });
+
+  useEffect(() => {
+    setAbortController(new AbortController());
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+### Stateless
+
+#### request
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatelessRequest } from "saint-bernard";
+
+export const App = () => {
+  const { request } = useStatelessRequest();
+
+  useEffect(() => {
+    request({
+      url: "https://jsonplaceholder.typicode.com/posts",
+      method: "POST",
+      headers: {
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        email: "user@domain.com"
+      }),
+      onResponse: async response => {
+        if (response.ok) {
+          console.log("Cool!");
+        } else {
+          console.log("Uncool...")
+        }
+      }
+    });
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### cancel
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatelessRequest } from "saint-bernard";
+
+export const App = () => {
+  const { cancel } = useStatelessRequest();
+
+  useEffect(() => {
+    return () => {
+      cancel();
+    };
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### error
+
+```typescript
+import React from "react";
+import { useStatelessRequest, CancelError } from "saint-bernard";
+
+export const App = () => {
+  const { error } = useStatelessRequest();
+
+  if (error) {
+    if (error instanceof CancelError) {
+      return <h1>Request was cancelled</h1>;
+    }
+
+    return <h1>Something went wrong: {error.message}</h1>;
+  }
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### setError
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatelessRequest } from "saint-bernard";
+
+export const App = () => {
+  const { setError } = useStatelessRequest();
+
+  useEffect(() => {
+    setError(new Error("Something went wrong"));
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### loading
+
+```typescript
+import React from "react";
+import { useStatelessRequest } from "saint-bernard";
+
+export const App = () => {
+  const { loading } = useStatelessRequest();
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### setLoading
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatelessRequest } from "saint-bernard";
+
+export const App = () => {
+  const { setLoading } = useStatelessRequest();
+
+  useEffect(() => {
+    setLoading(true);
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### abortController
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatelessRequest } from "saint-bernard";
+
+export const App = () => {
+  const { abortController } = useStatelessRequest();
+
+  useEffect(() => {
+    abortController.abort();
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+#### setAbortController
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatelessRequest } from "saint-bernard";
+
+export const App = () => {
+  const { setAbortController } = useStatelessRequest();
+
+  useEffect(() => {
+    setAbortController(new AbortController());
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
 ```
 
 ## Changelog
