@@ -14,6 +14,32 @@ describe("CancelError", () => {
 })
 
 describe("useRequest", () => {
+  test("It should work without state nor resolver", () => {
+    const spy = vi.spyOn(window, "fetch");
+
+    spy.mockImplementation(() => Promise.resolve(new Response()))
+
+    const Main = () => {
+      const { request } = useRequest()
+
+      useEffect(() => {
+        request({
+          url: "https://jsonplaceholder.typicode.com/users",
+        })
+      }, [request])
+
+      return (
+        <p>Success</p>
+      )
+    }
+
+    const { container } = render(<Main />)
+
+    expect(container.innerText).toEqual("Success")
+
+    spy.mockClear();
+  });
+
   test("It should return the data", async () => {
     const spy = vi.spyOn(window, "fetch")
 
