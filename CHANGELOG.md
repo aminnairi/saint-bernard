@@ -2,10 +2,16 @@
 
 ## Versions
 
+- [`2.0.0`](#200)
 - [`1.0.0`](#100)
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 2.0.0
+
+- Resolver option deletion ([#42](https://github.com/aminnairi/saint-bernard/pull/42))
+- Initial state is now optional ([#43](https://github.com/aminnairi/saint-bernard/pull/43))
 
 ## 1.0.0
 
