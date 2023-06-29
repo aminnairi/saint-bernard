@@ -22,12 +22,14 @@ describe("useRequest", () => {
     const Main = () => {
       const { state, request } = useRequest({
         initialState: [],
-        resolver: (response) => response.json()
       })
 
       useEffect(() => {
         request({
-          url: "https://jsonplaceholder.typicode.com"
+          url: "https://jsonplaceholder.typicode.com",
+          onResponse: response => {
+            return response.json()
+          }
         })
       }, [request])
 
@@ -62,15 +64,15 @@ describe("useRequest", () => {
 
     const Main = () => {
       const { error, cancel, request } = useRequest({
-        initialState: [],
-        resolver: (response) => {
-          return response.json();
-        }
+        initialState: []
       })
 
       useEffect(() => {
         request({
-          url: "https://jsonplaceholder.typicode.com/users"
+          url: "https://jsonplaceholder.typicode.com/users",
+          onResponse: response => {
+            return response.json();
+          }
         })
       }, [request])
 
@@ -107,13 +109,15 @@ describe("useRequest", () => {
 
     const Main = () => {
       const { error, request } = useRequest({
-        initialState: [],
-        resolver: response => response.json()
+        initialState: []
       })
 
       useEffect(() => {
         request({
-          url: "https://jsonplaceholder.typicode.com/users"
+          url: "https://jsonplaceholder.typicode.com/users",
+          onResponse: async response => {
+            return response.json();
+          }
         })
       }, [request])
 
