@@ -2,12 +2,18 @@
 
 ## Versions
 
+- [`3.0.1`](#301)
 - [`3.0.0`](#300)
 - [`2.0.0`](#200)
 - [`1.0.0`](#100)
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 3.0.1
+
+- Fixed the missing summary content ([#50](https://github.com/aminnairi/saint-bernard/pull/50))
+- Fixed type definitions issues using Next.js ([#51](https://github.com/aminnairi/saint-bernard/pull/51))
 
 ## 3.0.0
 
