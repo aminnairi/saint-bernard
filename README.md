@@ -6,6 +6,37 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
 
 ## Summary
 
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Uninstallation](#uninstallation)
+- [Usage](#usage)
+  - [Stateful](#stateful)
+    - [state](#state)
+    - [setState](#setstate)
+    - [request](#request)
+    - [cancel](#cancel)
+    - [error](#error)
+    - [setError](#seterror)
+    - [loading](#loading)
+    - [setLoading](#setloading)
+    - [abortController](#abortcontroller)
+    - [setAbortController](#setabortcontroller)
+  - [Stateless](#stateless)
+    - [request](#request-1)
+    - [cancel](#cancel-1)
+    - [error](#error-1)
+    - [setError](#seterror-1)
+    - [loading](#loading-1)
+    - [setLoading](#setloading-1)
+    - [abortController](#abortcontroller-1)
+    - [setAbortController](#setabortcontroller-1)
+- [Changelog](#changelog)
+- [Code of conduct](#code-of-conduct)
+- [License](#license)
+- [Security](#security)
+- [Contributing](#contributing)
+
 ## Features
 
 - Close to the metal, configurable yet high-level enough to help you do more with less
