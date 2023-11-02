@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 export class CancelError extends Error {
   constructor(message: string) {
@@ -57,6 +57,10 @@ export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<Sta
     }
   }, []);
 
+  useEffect(() => {
+    cancel();
+  }, []);
+
   return {
     state,
     error,
@@ -104,6 +108,10 @@ export const useStatelessRequest = () => {
     } catch (error) {
       setError(error instanceof Error ? error : new Error(String(error)));
     }
+  }, []);
+  
+  useEffect(() => {
+    cancel();
   }, []);
 
   return {
