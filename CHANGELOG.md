@@ -2,6 +2,7 @@
 
 ## Versions
 
+- [`3.1.0`](#310)
 - [`3.0.1`](#301)
 - [`3.0.0`](#300)
 - [`2.0.0`](#200)
@@ -9,6 +10,11 @@
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 3.1.0
+
+- request now returns a promise that can be rejected just like fetch ([#53](https://github.com/aminnairi/saint-bernard/pull/53))
+- now automatically canceling the request on component dismount ([#54](https://github.com/aminnairi/saint-bernard/pull/54))
 
 ## 3.0.1
 
