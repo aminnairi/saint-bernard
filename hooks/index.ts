@@ -31,27 +31,30 @@ export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<Sta
     abortController.abort()
   }, [abortController])
 
-  const request = useCallback(({ url, onResponse, ...options }: StatefulRequestOptions<State>) => {
-    const newAbortController = new AbortController()
+  const request = useCallback(async ({ url, onResponse, ...options }: StatefulRequestOptions<State>) => {
+    try {
+      const newAbortController = new AbortController()
 
-    setAbortController(newAbortController)
-    setError(null)
-    setLoading(true)
+      setAbortController(newAbortController)
+      setError(null)
+      setLoading(true)
 
-    return fetch(url, {
-      ...options,
-      signal: newAbortController.signal
-    }).then(response => {
-      return onResponse(response);
-    }).then(newData => {
-      setState(newData);
-    }).catch(error => {
-      const errorInstance = error instanceof Error && error.name === "AbortError" ? new CancelError("Request has been canceled") : error;
-      setError(errorInstance);
-      return Promise.reject(errorInstance);
-    }).finally(() => {
-      setLoading(false)
-    })
+      await fetch(url, {
+        ...options,
+        signal: newAbortController.signal
+      }).then(response => {
+        return onResponse(response);
+      }).then(newData => {
+        setState(newData);
+      }).catch(error => {
+        const errorInstance = error instanceof Error && error.name === "AbortError" ? new CancelError("Request has been canceled") : error;
+        setError(errorInstance);
+      }).finally(() => {
+        setLoading(false)
+      })
+    } catch (error) {
+      setError(error instanceof Error ? error : new Error(String(error)));
+    }
   }, []);
 
   return {
@@ -77,27 +80,30 @@ export const useStatelessRequest = () => {
     abortController.abort()
   }, [abortController])
 
-  const request = useCallback(({ url, onResponse, ...options }: StatelessRequestOptions) => {
-    const newAbortController = new AbortController()
+  const request = useCallback(async ({ url, onResponse, ...options }: StatelessRequestOptions) => {
+    try {
+      const newAbortController = new AbortController()
 
-    setAbortController(newAbortController)
-    setError(null)
-    setLoading(true)
+      setAbortController(newAbortController)
+      setError(null)
+      setLoading(true)
 
-    return fetch(url, {
-      ...options,
-      signal: newAbortController.signal
-    }).then(response => {
-      if (onResponse) {
-        return onResponse(response);
-      }
-    }).catch(error => {
-      const errorInstance = error instanceof Error && error.name === "AbortError" ? new CancelError("Request has been canceled") : error;
-      setError(errorInstance);
-      return Promise.reject(errorInstance);
-    }).finally(() => {
-      setLoading(false)
-    })
+      await fetch(url, {
+        ...options,
+        signal: newAbortController.signal
+      }).then(response => {
+        if (onResponse) {
+          return onResponse(response);
+        }
+      }).catch(error => {
+        const errorInstance = error instanceof Error && error.name === "AbortError" ? new CancelError("Request has been canceled") : error;
+        setError(errorInstance);
+      }).finally(() => {
+        setLoading(false)
+      });
+    } catch (error) {
+      setError(error instanceof Error ? error : new Error(String(error)));
+    }
   }, []);
 
   return {
