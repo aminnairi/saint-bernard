@@ -38,7 +38,7 @@ export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<Sta
     setError(null)
     setLoading(true)
 
-    fetch(url, {
+    return fetch(url, {
       ...options,
       signal: newAbortController.signal
     }).then(response => {
@@ -46,12 +46,9 @@ export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<Sta
     }).then(newData => {
       setState(newData);
     }).catch(error => {
-      if (error instanceof Error && error.name === "AbortError") {
-        setError(new CancelError("Request has been canceled"))
-        return
-      }
-
-      setError(error)
+      const errorInstance = error instanceof Error && error.name === "AbortError" ? new CancelError("Request has been canceled") : error;
+      setError(errorInstance);
+      return Promise.reject(errorInstance);
     }).finally(() => {
       setLoading(false)
     })
@@ -87,7 +84,7 @@ export const useStatelessRequest = () => {
     setError(null)
     setLoading(true)
 
-    fetch(url, {
+    return fetch(url, {
       ...options,
       signal: newAbortController.signal
     }).then(response => {
@@ -95,12 +92,9 @@ export const useStatelessRequest = () => {
         return onResponse(response);
       }
     }).catch(error => {
-      if (error instanceof Error && error.name === "AbortError") {
-        setError(new CancelError("Request has been canceled"))
-        return
-      }
-
-      setError(error)
+      const errorInstance = error instanceof Error && error.name === "AbortError" ? new CancelError("Request has been canceled") : error;
+      setError(errorInstance);
+      return Promise.reject(errorInstance);
     }).finally(() => {
       setLoading(false)
     })
