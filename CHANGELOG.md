@@ -2,6 +2,7 @@
 
 ## Versions
 
+- [`3.2.0`](#320)
 - [`3.1.0`](#310)
 - [`3.0.1`](#301)
 - [`3.0.0`](#300)
@@ -10,6 +11,10 @@
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 3.2.0
+
+- Added a full example on how to deal with dependent requests ([#56](https://github.com/aminnairi/saint-bernard/pull/56))
 
 ## 3.1.0
 
