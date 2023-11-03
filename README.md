@@ -31,6 +31,8 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
     - [setLoading](#setloading-1)
     - [abortController](#abortcontroller-1)
     - [setAbortController](#setabortcontroller-1)
+- [Examples](#examples)
+  - [Dependent requests](#dependent-requests)
 - [Changelog](#changelog)
 - [Code of conduct](#code-of-conduct)
 - [License](#license)
@@ -104,6 +106,8 @@ export const App = () => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### setState
 
 ```typescript
@@ -124,6 +128,8 @@ export const App = () => {
   );
 };
 ```
+
+[Back to summary](#summary).
 
 #### request
 
@@ -157,6 +163,8 @@ export const App = () => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### cancel
 
 ```typescript
@@ -179,6 +187,8 @@ export const App = () => {
   );
 };
 ```
+
+[Back to summary](#summary).
 
 #### error
 
@@ -205,6 +215,8 @@ export const App = () => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### setError
 
 ```typescript
@@ -225,6 +237,8 @@ export const App = () => {
   );
 };
 ```
+
+[Back to summary](#summary).
 
 #### loading
 
@@ -247,6 +261,8 @@ export const App = () => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### setLoading
 
 ```typescript
@@ -267,6 +283,8 @@ export const App = () => {
   );
 };
 ```
+
+[Back to summary](#summary).
 
 #### abortController
 
@@ -289,6 +307,8 @@ export const App = () => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### setAbortController
 
 ```typescript
@@ -309,6 +329,8 @@ export const App = () => {
   );
 };
 ```
+
+[Back to summary](#summary).
 
 ### Stateless
 
@@ -347,6 +369,8 @@ export const App = () => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### cancel
 
 ```typescript
@@ -367,6 +391,8 @@ export const App = () => {
   );
 };
 ```
+
+[Back to summary](#summary).
 
 #### error
 
@@ -391,6 +417,8 @@ export const App = () => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### setError
 
 ```typescript
@@ -409,6 +437,8 @@ export const App = () => {
   );
 };
 ```
+
+[Back to summary](#summary).
 
 #### loading
 
@@ -429,6 +459,8 @@ export const App = () => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### setLoading
 
 ```typescript
@@ -447,6 +479,8 @@ export const App = () => {
   );
 };
 ```
+
+[Back to summary](#summary).
 
 #### abortController
 
@@ -467,6 +501,8 @@ export const App = () => {
 };
 ```
 
+[Back to summary](#summary).
+
 #### setAbortController
 
 ```typescript
@@ -485,6 +521,174 @@ export const App = () => {
   );
 };
 ```
+
+[Back to summary](#summary).
+
+## Examples
+
+### Dependent requests
+
+```tsx
+import { useEffect } from "react";
+import { useStatefulRequest } from "saint-bernard";
+import { z } from "zod";
+
+const commentsSchema = z.array(z.object({
+  postId: z.number()
+}));
+
+const postSchema = z.object({
+  userId: z.number()
+});
+
+const userSchema = z.object({
+  username: z.string()
+});
+
+type Comments = z.infer<typeof commentsSchema>;
+type Post = z.infer<typeof postSchema>;
+type User = z.infer<typeof userSchema>;
+
+export const App = () => {
+  const {
+    state: comments,
+    loading: getCommentsRequestLoading,
+    error: getCommentsRequestError,
+    request: getCommentsRequest,
+  } = useStatefulRequest<Comments | null>({
+    initialState: null
+  });
+
+  const {
+    state: post,
+    request: getPostRequest,
+    loading: getPostRequestLoading,
+    error: getPostRequestError
+  } = useStatefulRequest<Post | null>({
+    initialState: null
+  });
+
+  const {
+    state: user,
+    request: getUserRequest,
+    loading: getUserRequestLoading,
+    error: getUserRequestError
+  } = useStatefulRequest<User | null>({ initialState: null });
+
+  useEffect(() => {
+    getCommentsRequest({
+      url: "https://jsonplaceholder.typicode.com/comments",
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      },
+      onResponse: async response => {
+        if (!response.ok) {
+          throw new Error("Failed requesting comments");
+        }
+
+        const json = await response.json();
+        const comments = commentsSchema.parse(json);
+
+        return comments;
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!comments) {
+      return;
+    }
+
+    if (comments.length === 0) {
+      return;
+    }
+
+    const firstComment = comments[0];
+
+    getPostRequest({
+      url: `https://jsonplaceholder.typicode.com/posts/${firstComment.postId}`,
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      },
+      onResponse: async response => {
+        if (!response.ok) {
+          throw new Error("Failed requesting a post");
+        }
+
+        const json = await response.json();
+        const post = postSchema.parse(json);
+
+        return post;
+      }
+    });
+
+  }, [comments]);
+
+  useEffect(() => {
+    if (!post) {
+      return;
+    }
+
+    getUserRequest({
+      url: `https://jsonplaceholder.typicode.com/users/${post.userId}`,
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      },
+      onResponse: async response => {
+        if (!response.ok) {
+          throw new Error("Failed requesting a user");
+        }
+
+        const json = await response.json();
+        const user = userSchema.parse(json);
+
+        return user;
+      }
+    });
+  }, [post]);
+
+  if (getCommentsRequestLoading) {
+    return "Requesting comments, please wait...";
+  }
+
+  if (getPostRequestLoading) {
+    return "Requesting a post, please wait...";
+  }
+
+  if (getUserRequestLoading) {
+    return "Requesting a user, please wait...";
+  }
+
+  if (getCommentsRequestError) {
+    return getCommentsRequestError.message;
+  }
+
+  if (getPostRequestError) {
+    return getPostRequestError.message;
+  }
+
+  if (getUserRequestError) {
+    return getUserRequestError.message;
+  }
+
+  if (!user) {
+    return "No user found";
+  }
+
+  return (
+    <ul>
+      <li>
+        Username: {user.username}
+      </li>
+    </ul>
+  );
+}
+```
+
+[Back to summary](#summary).
 
 ## Changelog
 
