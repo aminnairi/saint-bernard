@@ -16,6 +16,11 @@ export class FetchError extends Error {
 
 export interface UseStatefulRequestOptions<State> {
   initialState: State,
+  initialLoading?: boolean
+}
+
+export interface UseStatelessRequestOptions {
+  initialLoading?: boolean
 }
 
 export interface StatefulRequestOptions<State> extends RequestInit {
@@ -32,7 +37,7 @@ export interface StatelessRequestOptions extends RequestInit {
 
 export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<State>) => {
   const [error, setError] = useState<Error | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<boolean>(options.initialLoading || false)
   const [state, setState] = useState<State>(options.initialState)
   const [abortController, setAbortController] = useState(new AbortController())
 
@@ -100,9 +105,9 @@ export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<Sta
   }
 }
 
-export const useStatelessRequest = () => {
+export const useStatelessRequest = (options?: UseStatelessRequestOptions) => {
   const [error, setError] = useState<Error | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<boolean>(options?.initialLoading ?? false)
   const [abortController, setAbortController] = useState(new AbortController())
 
   const cancel = useCallback(() => {
