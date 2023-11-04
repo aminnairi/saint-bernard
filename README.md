@@ -20,6 +20,7 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
     - [error](#error)
     - [setError](#seterror)
     - [loading](#loading)
+    - [initialLoading](#initialloading)
     - [setLoading](#setloading)
     - [abortController](#abortcontroller)
     - [setAbortController](#setabortcontroller)
@@ -30,6 +31,7 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
     - [error](#error-1)
     - [setError](#seterror-1)
     - [loading](#loading-1)
+    - [initialLoading](#initialloading-1)
     - [setLoading](#setloading-1)
     - [abortController](#abortcontroller-1)
     - [setAbortController](#setabortcontroller-1)
@@ -294,6 +296,30 @@ export const App = () => {
 
 [Back to summary](#summary).
 
+#### initialLoading
+
+```typescript
+import React from "react";
+import { request } from "saint-bernard";
+
+export const App = () => {
+  const { loading } = useStatefulRequest<Array<any>>({
+    initialState: [],
+    initialLoading: true
+  });
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+[Back to summary](#summary).
+
 #### setLoading
 
 ```typescript
@@ -503,6 +529,29 @@ import { useStatelessRequest } from "saint-bernard";
 
 export const App = () => {
   const { loading } = useStatelessRequest();
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+[Back to summary](#summary).
+
+#### initialLoading
+
+```typescript
+import React from "react";
+import { useStatelessRequest } from "saint-bernard";
+
+export const App = () => {
+  const { loading } = useStatelessRequest({
+    initialLoading: true
+  });
 
   if (loading) {
     return <h1>Loading...</h1>;
