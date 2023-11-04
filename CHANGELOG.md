@@ -2,6 +2,7 @@
 
 ## Versions
 
+- [`3.3.0`](#330)
 - [`3.2.0`](#320)
 - [`3.1.0`](#310)
 - [`3.0.1`](#301)
@@ -11,6 +12,12 @@
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 3.3.0
+
+- Now accounting for fetch errors from iOS and the rest of the operating systems' errors ([#60](https://github.com/aminnairi/saint-bernard/pull/60))
+- Added timeout support ([#61](https://github.com/aminnairi/saint-bernard/pull/61))
+- Added an options for setting the initial loading state ([#62](https://github.com/aminnairi/saint-bernard/pull/62))
 
 ## 3.2.0
 
