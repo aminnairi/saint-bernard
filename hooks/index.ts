@@ -1,9 +1,16 @@
 import { useCallback, useEffect, useState } from "react"
 
 export class CancelError extends Error {
-  constructor(message: string) {
+  public constructor(message: string) {
     super(message)
     this.name = "CancelError"
+  }
+}
+
+export class FetchError extends Error {
+  public constructor(message: string) {
+    super(message);
+    this.name = "FetchError";
   }
 }
 
@@ -53,7 +60,19 @@ export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<Sta
         setLoading(false)
       })
     } catch (error) {
-      setError(error instanceof Error ? error : new Error(String(error)));
+      if (!(error instanceof Error)) {
+        setError(new Error(String(error)));
+
+        return;
+      }
+
+      if (error.message === "Failed to fetch" || error.message === "Load failed") {
+        setError(new FetchError(error.message));
+        
+        return;
+      }
+
+      setError(error);
     }
   }, []);
 
@@ -106,7 +125,19 @@ export const useStatelessRequest = () => {
         setLoading(false)
       });
     } catch (error) {
-      setError(error instanceof Error ? error : new Error(String(error)));
+      if (!(error instanceof Error)) {
+        setError(new Error(String(error)));
+
+        return;
+      }
+
+      if (error.message === "Failed to fetch" || error.message === "Load failed") {
+        setError(new FetchError(error.message));
+        
+        return;
+      }
+
+      setError(error);
     }
   }, []);
   
