@@ -33,7 +33,7 @@
     "bernard"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0 --port 5173",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "coverage-report": "coveralls < coverage/lcov.info",
