@@ -29,6 +29,7 @@ export const UsersPage = () => {
     request({
       url: "https://jsonplaceholder.typicode.com/users",
       method: "GET",
+      timeoutInMilliseconds: 100,
       headers: {
         "Accept": "application/json"
       },
@@ -58,7 +59,7 @@ export const UsersPage = () => {
       return (
         <Fragment>
           <h1>Canceled</h1>
-          <p>You have canceled the request.</p>
+          <p>Request cancel or timed out.</p>
           <button onClick={getUsers}>Retry?</button>
         </Fragment>
       )
