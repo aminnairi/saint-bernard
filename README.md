@@ -16,6 +16,7 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
     - [setState](#setstate)
     - [request](#request)
     - [cancel](#cancel)
+    - [timeout](#timeout)
     - [error](#error)
     - [setError](#seterror)
     - [loading](#loading)
@@ -25,6 +26,7 @@ React Hook for requesting data using the Web API Fetch written in TypeScript
   - [Stateless](#stateless)
     - [request](#request-1)
     - [cancel](#cancel-1)
+    - [timeout](#timeout-1)
     - [error](#error-1)
     - [setError](#seterror-1)
     - [loading](#loading-1)
@@ -180,6 +182,35 @@ export const App = () => {
     return () => {
       cancel();
     };
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+[Back to summary](#summary).
+
+#### timeout
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatefulRequest } from "saint-bernard";
+
+export const App = () => {
+  const { request } = useStatefulRequest<Array<any>>({
+    initialState: []
+  });
+
+  useEffect(() => {
+    request({
+      url: "https://jsonplaceholder.typicode.com/users",
+      timeoutInMilliseconds: 1000,
+      onResponse: async response => {
+        return [];
+      }
+    });
   }, []);
 
   return (
@@ -384,6 +415,30 @@ export const App = () => {
     return () => {
       cancel();
     };
+  }, []);
+
+  return (
+    <h1>Saint-Bernard</h1>
+  );
+};
+```
+
+[Back to summary](#summary).
+
+#### timeout
+
+```typescript
+import React, { useEffect } from "react";
+import { useStatelessRequest } from "saint-bernard";
+
+export const App = () => {
+  const { request } = useStatelessRequest();
+
+  useEffect(() => {
+    request({
+      url: "https://jsonplaceholder.typicode.com/users",
+      timeoutInMilliseconds: 1000
+    });
   }, []);
 
   return (
