@@ -15,17 +15,19 @@ export class FetchError extends Error {
 }
 
 export interface UseStatefulRequestOptions<State> {
-  initialState: State
+  initialState: State,
 }
 
 export interface StatefulRequestOptions<State> extends RequestInit {
   url: URL | RequestInfo,
   onResponse: (response: Response) => Promise<State>;
+  timeoutInMilliseconds?: number
 }
 
 export interface StatelessRequestOptions extends RequestInit {
   url: URL | RequestInfo,
   onResponse?: (response: Response) => void;
+  timeoutInMilliseconds?: number
 }
 
 export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<State>) => {
@@ -38,13 +40,17 @@ export const useStatefulRequest = <State>(options: UseStatefulRequestOptions<Sta
     abortController.abort()
   }, [abortController])
 
-  const request = useCallback(async ({ url, onResponse, ...options }: StatefulRequestOptions<State>) => {
+  const request = useCallback(async ({ url, onResponse, timeoutInMilliseconds, ...options }: StatefulRequestOptions<State>) => {
     try {
       const newAbortController = new AbortController()
 
       setAbortController(newAbortController)
       setError(null)
       setLoading(true)
+
+      if (timeoutInMilliseconds !== undefined) {
+        setTimeout(() => newAbortController.abort(), timeoutInMilliseconds);
+      }
 
       await fetch(url, {
         ...options,
@@ -103,13 +109,17 @@ export const useStatelessRequest = () => {
     abortController.abort()
   }, [abortController])
 
-  const request = useCallback(async ({ url, onResponse, ...options }: StatelessRequestOptions) => {
+  const request = useCallback(async ({ url, onResponse, timeoutInMilliseconds, ...options }: StatelessRequestOptions) => {
     try {
       const newAbortController = new AbortController()
 
       setAbortController(newAbortController)
       setError(null)
       setLoading(true)
+      
+      if (timeoutInMilliseconds !== undefined) {
+        setTimeout(() => newAbortController.abort(), timeoutInMilliseconds);
+      }
 
       await fetch(url, {
         ...options,
