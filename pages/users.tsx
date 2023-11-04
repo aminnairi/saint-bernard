@@ -19,6 +19,7 @@ export const UsersPage = () => {
 
   const { state, error, loading, request, cancel } = useStatefulRequest<Users>({
     initialState: [],
+    initialLoading: true
   })
 
   const goTo = useCallback((path: string) => () => {
