@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
-import { render } from "@testing-library/react"
+import { render, waitFor } from "@testing-library/react"
 import { describe, test, expect, vi } from "vitest"
-import { CancelError, useStatefulRequest, useStatelessRequest } from "."
+import { CancelError, FetchError, useStatefulRequest, useStatelessRequest } from "."
 
 describe("CancelError", () => {
   test("It should return an error instance", () => {
@@ -12,6 +12,16 @@ describe("CancelError", () => {
     expect(new CancelError("").name).toEqual("CancelError")
   })
 })
+
+describe("FetchError", () => {
+  test("It should return an error instance", () => {
+    expect(new FetchError("")).toBeInstanceOf(Error);
+  });
+
+  test("It should return an error with the correct name", () => {
+    expect(new FetchError("").name).toEqual("FetchError");
+  });
+});
 
 describe("useStatefulRequest", () => {
   test("It should work without state nor resolver", () => {
@@ -75,6 +85,32 @@ describe("useStatefulRequest", () => {
 
     expect(container.innerText).toEqual(JSON.stringify([{ id: 1 }]))
   })
+
+  test("It should return a CancelError whenever the timeout is used", async () => {
+    const Main = () => {
+      const { request, error, state } = useStatefulRequest({
+        initialState: null
+      });
+
+      useEffect(() => {
+        request({
+          url: "https://jsonplaceholder.typicode.com/photos",
+          timeoutInMilliseconds: 10,
+          onResponse: async () => {
+            return null;
+          }
+        });
+      }, []);
+
+      return JSON.stringify(error);
+    }
+
+    const rendered = render(<Main />);
+
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    expect(rendered.container.innerText).toEqual("Error");
+  });
 })
 
 describe("useStatelessRequest", () => {
