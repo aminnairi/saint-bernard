@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode, useCallback, useEffect } from "react"
+import React, { Fragment, useCallback, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { isError, match, useStatefulRequest } from "saint-bernard"
 import { z } from "zod"
@@ -14,7 +14,7 @@ const usersSchema = z.array(z.object({
 
 type Users = z.infer<typeof usersSchema>
 
-export const UsersPage = (): ReactNode => {
+export const UsersPage = () => {
   const navigate = useNavigate()
 
   const { state, loading, request, cancel } = useStatefulRequest<Users>({
