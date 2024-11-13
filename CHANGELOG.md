@@ -2,6 +2,7 @@
 
 ## Versions
 
+- [`4.0.0`](#400)
 - [`3.3.0`](#330)
 - [`3.2.0`](#320)
 - [`3.1.0`](#310)
@@ -12,6 +13,10 @@
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 4.0.0
+
+- Rework in order to make error handling more reliable ([#66](https://github.com/aminnairi/saint-bernard/pull/66))
 
 ## 3.3.0
 
