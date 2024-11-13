@@ -2,35 +2,23 @@
 
 ## Requirements
 
-- Docker
-- Docker Compose
+- [Node.js](https://nodejs.org)
+- [NPM](https://npmjs.com)
 
-## Dependencies
+## Dependencies installation
 
 ```bash
-docker compose run --rm npm install
+npm i
 ```
 
-## Build
+## Packages
+
+### Applications
+
+### Main Example
+
+#### Start
 
 ```bash
-docker compose run --rm npm run build
-```
-
-## Types
-
-```bash
-docker compose run --rm npm run types
-```
-
-## Test 
-
-```bash
-docker compose run --rm npm test
-```
-
-## Coverage
-
-```bash
-docker compose run --rm npm run coverage
+npm -w apps/example start
 ```
