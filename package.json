@@ -2,6 +2,7 @@
   "private": true,
   "workspaces": [
     "packages/saint-bernard",
-    "apps/example"
+    "apps/example",
+    "documentation"
   ]
 }
