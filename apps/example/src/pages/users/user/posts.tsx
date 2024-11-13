@@ -1,6 +1,6 @@
-import React, { Fragment, useCallback, useEffect } from "react"
+import React, { Fragment, ReactNode, useCallback, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { CancelError, useStatefulRequest } from "../../../hooks"
+import { CancelError, isError, match, useStatefulRequest } from "saint-bernard"
 import { z } from "zod"
 
 const postsSchema = z.array(z.object({
@@ -12,12 +12,12 @@ const postsSchema = z.array(z.object({
 
 type Posts = z.infer<typeof postsSchema>
 
-export const UsersUserPostsPage = () => {
+export const UsersUserPostsPage = (): ReactNode => {
   const { user } = useParams()
 
   const navigate = useNavigate()
 
-  const { state, loading, error, request, cancel } = useStatefulRequest<Posts>({
+  const { state, loading, request, cancel } = useStatefulRequest<Posts>({
     initialState: []
   })
 
@@ -41,7 +41,9 @@ export const UsersUserPostsPage = () => {
     navigate(path)
   }, [navigate])
 
-  useEffect(() => cancel, [cancel])
+  useEffect(() => {
+    getUserPosts();
+  }, [getUserPosts])
 
   if (loading) {
     return (
@@ -52,24 +54,39 @@ export const UsersUserPostsPage = () => {
     )
   }
 
-  if (error) {
-    if (error instanceof CancelError) {
-      return (
+  if (isError(state)) {
+    return match(state, {
+      CancelError: () => (
         <Fragment>
           <h1>Canceled</h1>
           <p>Request has been canceled</p>
           <button onClick={getUserPosts}>Retry?</button>
         </Fragment>
+      ),
+      ExpectedError: error => (
+        <Fragment>
+          <h1>Error</h1>
+          <p>An error has occurred.</p>
+          <small>{error.message}</small>
+          <button onClick={getUserPosts}>Retry?</button>
+        </Fragment>
+      ),
+      NetworkError: () => (
+        <Fragment>
+          <h1>Network Error</h1>
+          <p>Are you still connected to the internet?</p>
+          <button onClick={getUserPosts}>Retry?</button>
+        </Fragment>
+      ),
+      UnexpectedError: error => (
+        <Fragment>
+          <h1>Unexpected error</h1>
+          <p>An unexpected error occurred, please try again later.</p>
+          <small>{error.message}</small>
+          <button onClick={getUserPosts}>Retry?</button>
+        </Fragment>
       )
-    }
-
-    return (
-      <Fragment>
-        <h1>Error</h1>
-        <p>{error.message}</p>
-        <button onClick={getUserPosts}>Retry?</button>
-      </Fragment>
-    )
+    });
   }
 
   return (
