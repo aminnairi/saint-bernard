@@ -6,6 +6,16 @@ export default defineConfig({
   outDir: "../../docs",
   base: "/saint-bernard",
   themeConfig: {
+    nav: [
+      {
+        text: "GitHub",
+        link: "https://github.com/aminnairi/saint-bernard"
+      },
+      {
+        text: "NPM",
+        link: "https://npmjs.com/package/saint-bernard"
+      }
+    ],
     sidebar: [
       {
         text: "Introduction",
@@ -13,6 +23,10 @@ export default defineConfig({
           {
             text: "Getting Started",
             link: "/introduction/getting-started"
+          },
+          {
+            text: "Strict mode",
+            link: "/introduction/strict-mode"
           }
         ]
       },

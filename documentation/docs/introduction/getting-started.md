@@ -98,7 +98,7 @@ const App = () => {
           <p>{error.message}</p>
           <button onClick={getUsers}>Try again?</button>
         </div>
-      )
+      ),
       UnexpectedError: error => (
         <div>
           <p>Unexpected error: {error.message}</p>
