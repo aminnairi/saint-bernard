@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "saint-bernard",
   outDir: "../../docs",
+  base: "/saint-bernard",
   themeConfig: {
     sidebar: [
       {
