@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.vuejs.org/config/app-configs
 export default defineConfig({
   title: "saint-bernard",
+  description: "Official documentation website for the saint-bernard Node.js library.",
   outDir: "../../docs",
   base: "/saint-bernard",
   themeConfig: {
