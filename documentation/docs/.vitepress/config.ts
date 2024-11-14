@@ -64,7 +64,20 @@ export default defineConfig({
             link: "/api/expected-error"
           }
         ]
+      },
+      {
+        text: "Miscellaneous",
+        items: [
+          {
+            text: "Prior Art",
+            link: "/miscellaneous/prior-art"
+          },
+          {
+            text: "Working with HTTP servers",
+            link: "/miscellaneous/working-with-http-servers"
+          }
+        ]
       }
-  ]
+    ]
   }
-})
+});
