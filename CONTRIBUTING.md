@@ -15,10 +15,24 @@ npm i
 
 ### Applications
 
-### Main Example
+### Example
 
 #### Start
 
 ```bash
 npm -w apps/example start
+```
+
+### Documentation
+
+#### Development
+
+```bash
+npm -w documentation run dev
+```
+
+#### Build
+
+```bash
+npm -w documentation run build
 ```
