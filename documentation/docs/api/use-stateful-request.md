@@ -243,3 +243,25 @@ const App = () => {
   );
 };
 ```
+
+## reset
+
+Sometimes, it can be great to offer an alternative to retrying to run a request, instead it could be great to simply cancel everything and reset the state.
+
+For that matter, you can use the `reset` function. It essentially reset the state to its initial state, provided when creating the request.
+
+```typescript
+import { useStatefulRequest } from "saint-bernard";
+
+const App = () => {
+  const {
+    reset // [!code focus]
+  } = useStatefulRequest<Users>({
+    initialState: []
+  });
+
+  return (
+    <button onClick={reset}>Reset</button> // [!code focus]
+  );
+};
+```
