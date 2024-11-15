@@ -3,7 +3,7 @@
   "type": "module",
   "name": "saint-bernard",
   "description": "React Hook for requesting data using the Web API Fetch written in TypeScript",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "homepage": "https://aminnairi.github.io/saint-bernard",
   "license": "MIT",
   "main": "index.ts",
