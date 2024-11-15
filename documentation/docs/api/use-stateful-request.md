@@ -147,6 +147,7 @@ This is the function that allow you to send the request. By default, when called
 ```typescript
 import { useEffect, useCallback } from "react";
 import { ExpectedError, useStatefulRequest } from "saint-bernard";
+import { z } from "zod";
 
 const usersSchema = z.array(z.object({
   id: z.number()
@@ -205,6 +206,7 @@ Several functions help you discriminate the data from the errors, and although t
 
 ```typescript
 import { ExpectedError, useStatefulRequest, isError, match } from "saint-bernard";
+import { z } from "zod";
 
 const usersSchema = z.array(z.object({
   id: z.number()
