@@ -10,13 +10,15 @@ on:
 
 jobs:
   test:
-    name: Ensure that every tests passes and the build has the expected files
+    name: Ensure that every tests passes and the documentation builds correctly
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Dependencies
         run: npm install
+      - name: Documentation build
+        run: npm -w documentation run build
       # - name: Test
       #   run: npm test
   # report:
