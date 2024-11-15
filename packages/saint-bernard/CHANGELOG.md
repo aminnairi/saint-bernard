@@ -2,6 +2,7 @@
 
 ## Versions
 
+- [`4.1.0`](#410)
 - [`4.0.2`](#402)
 - [`4.0.1`](#401)
 - [`4.0.0`](#400)
@@ -15,6 +16,12 @@
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 4.1.0
+
+- Added a reset function ([#77](https://github.com/aminnairi/saint-bernard/pull/77))
+- New package json home page ([#78](https://github.com/aminnairi/saint-bernard/pull/78))
+- Add documentation build in workflow ([#79](https://github.com/aminnairi/saint-bernard/pull/79))
 
 ## 4.0.2
 
