@@ -2,6 +2,7 @@
 
 ## Versions
 
+- [`4.0.2`](#402)
 - [`4.0.1`](#401)
 - [`4.0.0`](#400)
 - [`3.3.0`](#330)
@@ -14,6 +15,11 @@
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 4.0.2
+
+- Removed the type badge ([#74](https://github.com/aminnairi/saint-bernard/pull/74))
+- Removed the bundlephobia badge ([#76](https://github.com/aminnairi/saint-bernard/pull/76))
 
 ## 4.0.1
 
