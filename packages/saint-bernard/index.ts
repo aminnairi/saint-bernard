@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, Dispatch, SetStateAction, MutableRefObject } from "react";
+import { useState, useCallback, useRef, useEffect, Dispatch, SetStateAction, MutableRefObject, startTransition } from "react";
 
 export const kind = Symbol("kind");
 
@@ -50,6 +50,8 @@ export type CancelFunction = () => void;
 
 export type RequestFunction<State> = (options: RequestOptions<State>) => void;
 
+export type ResetFunction = () => void;
+
 export type StatefulRequest<State> = {
   state: State | NetworkError | CancelError | UnexpectedError | ExpectedError,
   setState: Dispatch<SetStateAction<State | NetworkError | CancelError | UnexpectedError | ExpectedError>>,
@@ -57,7 +59,8 @@ export type StatefulRequest<State> = {
   loading: boolean,
   setLoading: Dispatch<SetStateAction<boolean>>,
   abortControllerRef: MutableRefObject<AbortController>
-  cancel: CancelFunction
+  cancel: CancelFunction,
+  reset: ResetFunction
 }
 
 export type StatelessRequest = StatefulRequest<void>;
@@ -71,7 +74,12 @@ export const useStatefulRequest = <State = void>({ initialLoading = false, initi
     abortControllerRef.current.abort();
   }, []);
 
+  const reset: ResetFunction = useCallback(() => {
+    setState(initialState);
+  }, [initialState]);
+
   const request: RequestFunction<State> = useCallback(({ onResponse, url, ...options }) => {
+    setState(initialState);
     setLoading(true);
     abortControllerRef.current = new AbortController();
 
@@ -103,7 +111,7 @@ export const useStatefulRequest = <State = void>({ initialLoading = false, initi
     }).finally(() => {
       setLoading(false);
     });
-  }, []);
+  }, [initialState]);
 
   useEffect(() => {
     return () => {
@@ -118,7 +126,8 @@ export const useStatefulRequest = <State = void>({ initialLoading = false, initi
     state,
     setState,
     loading,
-    setLoading
+    setLoading,
+    reset
   }
 };
 
