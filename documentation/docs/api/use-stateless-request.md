@@ -131,39 +131,41 @@ const App = () => {
 
 ## request
 
-This is the function that allow you to send the request. By default, when called, the `useStatelessRequest` will not trigger any HTTP request until this function gets called. You can define any options from the Fetch Web API, except the `signal` one (this is using the `RequestInit` type internally).
+This is the function that allow you to send the request. By default, when called, the `useStatelessRequest` will not trigger any HTTP request until this function gets called. You can use any HTTP client of your choice, or even use a fake HTTP call to mock your API endpoints as long as you return either a `State` or an `ExpectedError`.
 
 ```typescript
 import { useEffect, useCallback } from "react";
-import { ExpectedError, useStatelessRequest } from "saint-bernard";
+import { ExpectedError, useStatelessRequest, GET } from "saint-bernard";
+import { z } from "zod";
+
+const usersSchema = z.array(z.object({
+  id: z.number()
+}));
+
+type Users = z.infer<typeof usersSchema>;
 
 const App = () => {
   const {
     request // [!code focus]
-  } = useStatelessRequest();
+  } = useStatelessRequest<Users>();
 
-  const createUser = useCallback(() => {
-    request({ // [!code focus:17]
-      url: "https://jsonplaceholder.typicode.com/users",
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: "email@domain.com",
-        password: "password"
-      }),
-      onResponse: async response => {
-        if (!response.ok) {
-          return new ExpectedError("Bad response from the server.");
-        }
+  const getUsers = useCallback(() => {
+    request(async ({ signal }) => { // [!code focus:12]
+      const response = await GET
+      .withUrl("https://jsonplaceholder.typicode.com/users")
+      .withHeader("Content-Type", "application/json")
+      .withSignal(signal)
+      .send();
+
+      if (!response.ok) {
+        return new ExpectedError("Bad response from the server.");
       }
-    }); 
+    });
   }, [request]);
 
   useEffect(() => {
-    createUser();
-  }, [createUser]);
+    getUsers();
+  }, [getUsers]);
 
   return (
     <p>Received data.</p>
