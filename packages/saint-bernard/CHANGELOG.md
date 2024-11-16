@@ -2,6 +2,7 @@
 
 ## Versions
 
+- [`4.1.1`](#411)
 - [`4.1.0`](#410)
 - [`4.0.2`](#402)
 - [`4.0.1`](#401)
@@ -16,6 +17,10 @@
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 4.1.1
+
+- Fixed infinite loop when the request function is used as dependency ([#82](https://github.com/aminnairi/saint-bernard/pull/82))
 
 ## 4.1.0
 
