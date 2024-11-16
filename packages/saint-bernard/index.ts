@@ -165,32 +165,33 @@ export const httpRequest = (options: HttpRequestOptions = {}) => ({
           });
         }
       }),
-
     })
   })
 });
 
-export const GET = (options: HttpRequestOptions = {}) => ({
+export const GET = ({
   withUrl: (url: string) => {
-    return httpRequest(options).withMethod("GET").withUrl(url).withBody("");
+    return httpRequest().withMethod("GET").withUrl(url).withBody("");
   }
 });
 
-export const POST = (options: HttpRequestOptions = {}) => ({
+export const POST = ({
   withUrl: (url: string) => ({
     withBody: (body: string) => {
-      return httpRequest(options).withMethod("GET").withUrl(url).withBody(body);
+      return httpRequest().withMethod("GET").withUrl(url).withBody(body);
     }
   })
 });
 
-export const PATCH = httpRequest;
+export const PATCH = httpRequest().withMethod("PATCH");
 
-export const DELETE = (options: HttpRequestOptions) => httpRequest(options).withMethod("DELETE");
+export const PUT = httpRequest().withMethod("PUT");
+
+export const DELETE = httpRequest().withMethod("DELETE");
   
-export const HEAD = (options: HttpRequestOptions) => ({
+export const HEAD = ({
   withUrl: (url: string) => {
-    return httpRequest(options).withMethod("HEAD").withUrl(url).withBody("");
+    return httpRequest().withMethod("HEAD").withUrl(url).withBody("");
   } 
 });
 
@@ -342,3 +343,21 @@ export const useStatelessRequest = ({ initialLoading = false }: Omit<Options<voi
     initialLoading
   });
 };
+
+
+const { request } = useStatelessRequest();
+
+request(async ({ signal }) => {
+  const response = await httpRequest()
+    .withMethod("POST")
+    .withUrl("https://server.com")
+    .withBody(JSON.stringify({ username: "johndoe" }))
+    .withSignal(signal)
+    .send();
+
+  if (response.ok) {
+    console.log("Created");
+  } else {
+    console.error("Error.");
+  }
+});
