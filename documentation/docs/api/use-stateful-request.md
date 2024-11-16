@@ -142,11 +142,11 @@ const App = () => {
 
 ## request
 
-This is the function that allow you to send the request. By default, when called, the `useStatefulRequest` will not trigger any HTTP request until this function gets called. You can define any options from the Fetch Web API, except the `signal` one (this is using the `RequestInit` type internally).
+This is the function that allow you to send the request. By default, when called, the `useStatefulRequest` will not trigger any HTTP request until this function gets called. You can use any HTTP client of your choice, or even use a fake HTTP call to mock your API endpoints as long as you return either a `State` or an `ExpectedError`.
 
 ```typescript
 import { useEffect, useCallback } from "react";
-import { ExpectedError, useStatefulRequest } from "saint-bernard";
+import { ExpectedError, useStatefulRequest, GET } from "saint-bernard";
 import { z } from "zod";
 
 const usersSchema = z.array(z.object({
@@ -163,27 +163,26 @@ const App = () => {
   });
 
   const getUsers = useCallback(() => {
-    request({ // [!code focus:22]
-      url: "https://jsonplaceholder.typicode.com/users",
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      onResponse: async response => {
-        if (!response.ok) {
-          return new ExpectedError("Bad response from the server.");
-        }
+    request(async ({ signal }) => { // [!code focus:21]
+      const response = await GET
+      .withUrl("https://jsonplaceholder.typicode.com/users")
+      .withHeader("Content-Type", "application/json")
+      .withSignal(signal)
+      .send();
 
-        const json = await response.json();
-        const validation = usersSchema.safeParse(json);
-
-        if (!validation.success) {
-          return new ExpectedError("Malformed response from the server.");
-        }
-
-        return validation.data;
+      if (!response.ok) {
+        return new ExpectedError("Bad response from the server.");
       }
-    }); 
+
+      const json = await response.json();
+      const validation = usersSchema.safeParse(json);
+
+      if (!validation.success) {
+        return new ExpectedError("Malformed response from the server.");
+      }
+
+      return validation.data;
+    });
   }, [request]);
 
   useEffect(() => {
