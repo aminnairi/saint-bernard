@@ -2,6 +2,7 @@
 
 ## Versions
 
+- [`5.0.0`](#500)
 - [`4.1.1`](#411)
 - [`4.1.0`](#410)
 - [`4.0.2`](#402)
@@ -17,6 +18,10 @@
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 5.0.0
+
+- Now allowing any http client to be used in the request function ([#83](https://github.com/aminnairi/saint-bernard/pull/83))
 
 ## 4.1.1
 
