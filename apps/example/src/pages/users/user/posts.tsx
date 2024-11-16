@@ -1,6 +1,6 @@
 import React, { Fragment, ReactNode, useCallback, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { CancelError, isError, match, useStatefulRequest } from "saint-bernard"
+import { ExpectedError, GET, isError, match, useStatefulRequest } from "saint-bernard"
 import { z } from "zod"
 
 const postsSchema = z.array(z.object({
@@ -22,20 +22,23 @@ export const UsersUserPostsPage = (): ReactNode => {
   })
 
   const getUserPosts = useCallback(() => {
-    request({
-      url: `https://jsonplaceholder.typicode.com/users/${user}/posts`,
-      method: "GET",
-      headers: {
-        "Accept": "application/json"
-      },
-      onResponse: async response => {
-        const json = await response.json();
-        const parsed = postsSchema.parse(json)
+    request(async ({ signal }) => {
+      const response = await GET()
+        .withUrl(`https://jsonplaceholder.typicode.com/users/${user}/posts`)
+        .withHeader("Accept", "application/json")
+        .withSignal(signal)
+        .send();
 
-        return parsed;
+      const json = await response.json();
+      const validation = postsSchema.safeParse(json)
+
+      if (!validation.success) {
+        return new ExpectedError("Bad response from the server.");
       }
+
+      return validation.data;
     });
-  }, [request]);
+  }, [request, user]);
 
   const goTo = useCallback((path: string) => () => {
     navigate(path)

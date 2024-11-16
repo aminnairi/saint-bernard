@@ -1,7 +1,7 @@
 import React, { Fragment, ReactNode, useCallback, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { z } from "zod"
-import { CancelError, isError, match, useStatefulRequest } from "saint-bernard"
+import { ExpectedError, GET, isError, match, useStatefulRequest } from "saint-bernard"
 
 const userSchema = z.object({
   id: z.number(),
@@ -28,18 +28,21 @@ export const UserPage = (): ReactNode => {
   }, [navigate])
 
   const getUser = useCallback(() => {
-    request({
-      url: `https://jsonplaceholder.typicode.com/users/${user}`,
-      method: "GET",
-      headers: {
-        "Accept": "application/json"
-      },
-      onResponse: async response => {
-        const json = await response.json();
-        const parsed = userSchema.parse(json)
+    request(async ({ signal }) => {
+      const response = await GET()
+        .withUrl(`https://jsonplaceholder.typicode.com/users/${user}`)
+        .withHeader("Accept", "application/json")
+        .withSignal(signal)
+        .send();
 
-        return parsed;
+      const json = await response.json();
+      const validation = userSchema.safeParse(json)
+
+      if (!validation.success) {
+        return new ExpectedError("Bad response from the server");
       }
+
+      return validation.data;
     });
   }, [request, user]);
 
