@@ -2,6 +2,7 @@
 
 ## Versions
 
+- [`5.0.1`](#501)
 - [`5.0.0`](#500)
 - [`4.1.1`](#411)
 - [`4.1.0`](#410)
@@ -18,6 +19,10 @@
 - [`0.3.0`](#030)
 - [`0.2.0`](#020)
 - [`0.1.0`](#010)
+
+## 5.0.1
+
+- Updated the package json peer dependency for react identifier to use the latest react version from version 18 ([#85](https://github.com/aminnairi/saint-bernard/pull/85))
 
 ## 5.0.0
 
