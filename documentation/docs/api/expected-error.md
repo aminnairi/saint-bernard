@@ -9,7 +9,7 @@ You typically use this class when returning anything that is an error inside the
 ## Usage
 
 ```typescript
-import { ExpectedError, useStatelessRequest, isError, match } from "saint-bernard";
+import { ExpectedError, useStatelessRequest, isError, match, POST } from "saint-bernard";
 import { useEffect } from "react";
 
 const Main = () => {
@@ -19,27 +19,23 @@ const Main = () => {
   } = useStatelessRequest();
 
   useEffect(() => {
-    request({
-      url: "https://jsonplaceholder.typicode.com/users",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: "test@domain.com"
-      }),
-      onResponse: async response => {
-        if (!response.ok) {
-          if (response.status === 401) {
-            return new ExpectedError("You don't have the permissions to create a user."); // [!code focus]
-          }
+    request(async ({ signal }) => {
+      const response = await POST("https://jsonplaceholder.typicode.com/users")
+        .withSignal(signal)
+        .withHeader("Content-Type", "application/json")
+        .withBody(JSON.stringify({ username: "johndoe" }))
+        .send();
 
-          if (response.status === 429) {
-            return new ExpectedError("You can't send that much request."); // [!code focus]
-          }
-
-          return new ExpectedError("An error occurred, please try again later."); // [!code focus]
+      if (!response.ok) {
+        if (response.status === 401) {
+          return new ExpectedError("You don't have the permissions to create a user."); // [!code focus]
         }
+
+        if (response.status === 429) {
+          return new ExpectedError("You can't send that much request."); // [!code focus]
+        }
+
+        return new ExpectedError("An error occurred, please try again later."); // [!code focus]
       }
     });
   }, [request]);
@@ -70,7 +66,7 @@ const Main = () => {
 Note that this also work when using the `useStatefulRequest` hook.
 
 ```typescript
-import { ExpectedError, useStatefulRequest, isError, match } from "saint-bernard";
+import { ExpectedError, useStatefulRequest, isError, match, POST } from "saint-bernard";
 import { useEffect } from "react";
 
 const Main = () => {
@@ -80,27 +76,22 @@ const Main = () => {
   } = useStatelessRequest<void>(); // [!code focus]
 
   useEffect(() => {
-    request({
-      url: "https://jsonplaceholder.typicode.com/users",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: "test@domain.com"
-      }),
-      onResponse: async response => {
-        if (!response.ok) {
-          if (response.status === 401) {
-            return new ExpectedError("You don't have the permissions to create a user."); // [!code focus]
-          }
+    request(async ({ signal }) => {
+      const response = await POST("https://jsonplaceholder.typicode.com/users")
+        .withSignal(signal)
+        .withBody(JSON.stringify({ username: "johndoe" }))
+        .withHeader("Content-Type", "application/json");
 
-          if (response.status === 429) {
-            return new ExpectedError("You can't send that much request."); // [!code focus]
-          }
-
-          return new ExpectedError("An error occurred, please try again later."); // [!code focus]
+      if (!response.ok) {
+        if (response.status === 401) {
+          return new ExpectedError("You don't have the permissions to create a user."); // [!code focus]
         }
+
+        if (response.status === 429) {
+          return new ExpectedError("You can't send that much request."); // [!code focus]
+        }
+
+        return new ExpectedError("An error occurred, please try again later."); // [!code focus]
       }
     });
   }, [request]);
