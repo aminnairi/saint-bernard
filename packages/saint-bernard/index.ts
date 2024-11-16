@@ -111,7 +111,7 @@ export const useStatefulRequest = <State = void>({ initialLoading = false, initi
     }).finally(() => {
       setLoading(false);
     });
-  }, [initialState]);
+  }, []);
 
   useEffect(() => {
     return () => {
