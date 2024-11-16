@@ -23,7 +23,7 @@ export const UsersUserPostsPage = (): ReactNode => {
 
   const getUserPosts = useCallback(() => {
     request(async ({ signal }) => {
-      const response = await GET()
+      const response = await GET
         .withUrl(`https://jsonplaceholder.typicode.com/users/${user}/posts`)
         .withHeader("Accept", "application/json")
         .withSignal(signal)
