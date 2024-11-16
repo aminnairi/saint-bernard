@@ -1,5 +1,211 @@
 import { useState, useCallback, useRef, useEffect, Dispatch, SetStateAction, MutableRefObject } from "react";
 
+export interface HttpRequestOptions {
+  headers?: Headers
+  credentials?: RequestCredentials,
+  cache?: RequestCache,
+  integrity?: string,
+  keepAlive?: boolean,
+  mode?: RequestMode,
+  priority?: RequestPriority,
+  redirect?: RequestRedirect,
+  referrer?: string,
+  referrerPolicy?: ReferrerPolicy,
+  signal?: AbortSignal,
+}
+
+export const httpRequest = (options: HttpRequestOptions = {}) => ({
+  withMethod: (method: string) => ({
+    withUrl: (url: string) => ({
+      withBody: (body: string) => ({
+        withHeader: (name: string, value: string) => {
+          const headers = new Headers([
+            ...options.headers?.entries() ?? [],
+            [name, value]
+          ]);
+
+          return httpRequest({ ...options, headers })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withHeaders: (headers: Headers) => {
+          return httpRequest({ ...options, headers })
+            .withMethod(method)
+            .withUrl(url);
+        },
+        withoutHeaders: () => {
+          return httpRequest({ ...options, headers: new Headers() })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body)
+        },
+        withoutHeader: (name: string) => {
+          return httpRequest({ ...options, headers: new Headers([...options.headers?.entries().filter(([headerName]) => headerName !== name) ?? []]) })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withIntegrity: (integrity: string) => {
+          return httpRequest({ ...options, integrity })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withDefaultIntegrity: () => {
+          return httpRequest({ ...options, integrity: undefined })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withReferrer: (referrer: string) => {
+          return httpRequest({ ...options, referrer })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withDefaultReferrer: () => {
+          return httpRequest({ ...options, referrer: undefined })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withCache: (cache: RequestCache) => {
+          return httpRequest({ ...options, cache })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withDefaultCache: () => {
+          return httpRequest({ ...options, cache: undefined })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withCredentials: (credentials: RequestCredentials) => {
+          return httpRequest({ ...options, credentials })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withDefaultCredentials: () => {
+          return httpRequest({ ...options, credentials: undefined })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withMode: (mode: RequestMode) => {
+          return httpRequest({ ...options, mode })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withDefaultMode: () => {
+          return httpRequest({ ...options, mode: undefined })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withPriority: (priority: RequestPriority) => {
+          return httpRequest({ ...options, priority })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withDefaultPriority: () => {
+          return httpRequest({ ...options, priority: undefined })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withRedirect(redirect: RequestRedirect) {
+          return httpRequest({ ...options, redirect })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withDefaultRedirect: () => {
+          return httpRequest({ ...options, redirect: undefined })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withSignal: (signal: AbortSignal) => {
+          return httpRequest({ ...options, signal })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withoutSignal: () => {
+          return httpRequest({ ...options, signal: undefined })
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        withUri: (uri: string) => {
+          const urlWithoutEndingSlash = url.replace(/(\s*\/*$\s*)*/g, "");
+          const uriWithoutStartingSlash = uri.replace(/^(\s*\/*\s*)*/g, "");
+
+          return httpRequest(options)
+            .withMethod(method)
+            .withUrl(`${urlWithoutEndingSlash}/${uriWithoutStartingSlash}`)
+            .withBody(body);
+        },
+        withoutUri: () => {
+          return httpRequest(options)
+            .withMethod(method)
+            .withUrl(url)
+            .withBody(body);
+        },
+        send: () => {
+          return fetch(url, {
+            ...options,
+            method,
+            body: body || undefined
+          });
+        }
+      }),
+
+    })
+  })
+});
+
+export const GET = (options: HttpRequestOptions = {}) => ({
+  withUrl: (url: string) => {
+    return httpRequest(options).withMethod("GET").withUrl(url).withBody("");
+  }
+});
+
+export const POST = (options: HttpRequestOptions = {}) => ({
+  withUrl: (url: string) => ({
+    withBody: (body: string) => {
+      return httpRequest(options).withMethod("GET").withUrl(url).withBody(body);
+    }
+  })
+});
+
+export const PATCH = httpRequest;
+
+export const DELETE = (options: HttpRequestOptions) => httpRequest(options).withMethod("DELETE");
+  
+export const HEAD = (options: HttpRequestOptions) => ({
+  withUrl: (url: string) => {
+    return httpRequest(options).withMethod("HEAD").withUrl(url).withBody("");
+  } 
+});
+
+export const OPTIONS = (options: HttpRequestOptions) => ({
+  withUrl: (url: string) => {
+    return httpRequest(options).withMethod("OPTIONS").withUrl(url).withBody("");
+  } 
+});
+
+export const TRACE = (options: HttpRequestOptions) => ({
+  withUrl: (url: string) => {
+    return httpRequest(options).withMethod("OPTIONS").withUrl(url).withBody("");
+  } 
+});
+
 export const kind = Symbol("kind");
 
 export interface DiscriminatedError {
