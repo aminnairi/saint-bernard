@@ -26,7 +26,7 @@ npm i saint-bernard
 ## Usage
 
 ```tsx
-import { ExpectedError, useStatefulRequest, isError, match } from "saint-bernard";
+import { ExpectedError, useStatefulRequest, isError, match, GET } from "saint-bernard";
 import { useEffect, useCallback } from "react";
 import { z } from "zod";
 
@@ -43,26 +43,24 @@ const App = () => {
   })
 
   const getUsers = useCallback(() => {
-    request({
-      url: "https://jsonplaceholder.typicode.com/users",
-      method: "GET",
-      headers: {
-        "Accept": "application/json"
-      },
-      onResponse: async response => {
-        if (!response.ok) {
-          return new ExpectedError("Bad response from the server.");
-        }
+    request(async ({ signal }) => {
+      const response = await GET("https://jsonplaceholder.typicode.com/users")
+        .withSignal(signal)
+        .withHeader("Accept", "application/json")
+        .send();
 
-        const json = await response.json();
-        const validation = usersSchema.safeParse(json);
-
-        if (!validation.success) {
-          return new ExpectedError("Bad data received from the server.");
-        }
-
-        return validation.data;
+      if (!response.ok) {
+        return new ExpectedError("Bad response from the server.");
       }
+
+      const json = await response.json();
+      const validation = usersSchema.safeParse(json);
+
+      if (!validation.success) {
+        return new ExpectedError("Bad data received from the server.");
+      }
+
+      return validation.data;
     });
   }, [request]);
 

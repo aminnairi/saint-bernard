@@ -10,7 +10,7 @@ Whenever the request times out, a `CancelError` will be triggered.
 
 ```typescript
 import { useEffect, useCallback } from "react";
-import { ExpectedError, useStatefulRequest, isError, match } from "saint-bernard";
+import { ExpectedError, useStatefulRequest, isError, match, GET } from "saint-bernard";
 import { z } from "zod";
 
 const usersSchema = z.array(z.object({
@@ -31,26 +31,24 @@ const Main = () => {
   });
 
   const getUsers = useCallback(() => {
-    request({
-      url: "https://jsonplaceholder.typicode.com/users",
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      onResponse: async response => {
-        if (!response.ok) {
-          return new ExpectedError("Bad response from the server.");
-        }
+    request(async ({ signal }) => {
+      const response = await GET("https://jsonplaceholder.typicode.com/users")
+        .withSignal(signal)
+        .withHeader("Accept", "application/json")
+        send();
 
-        const json = await response.json();
-        const validation = usersSchema.safeParse(json);
-
-        if (!validation.success) {
-          return new ExpectedError("Malformed response from the server.");
-        }
-
-        return validation.data;
+      if (!response.ok) {
+        return new ExpectedError("Bad response from the server.");
       }
+
+      const json = await response.json();
+      const validation = usersSchema.safeParse(json);
+
+      if (!validation.success) {
+        return new ExpectedError("Malformed response from the server.");
+      }
+
+      return validation.data;
     });
   }, [request]);
 
@@ -93,7 +91,7 @@ The important bit of code to focus on is the following as the rest of the source
 
 ```typescript
 import { useEffect, useCallback } from "react";
-import { ExpectedError, useStatefulRequest, isError, match } from "saint-bernard";
+import { ExpectedError, useStatefulRequest, isError, match, GET } from "saint-bernard";
 import { z } from "zod";
 
 const usersSchema = z.array(z.object({
@@ -114,26 +112,24 @@ const Main = () => {
   });
 
   const getUsers = useCallback(() => {
-    request({
-      url: "https://jsonplaceholder.typicode.com/users",
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      onResponse: async response => {
-        if (!response.ok) {
-          return new ExpectedError("Bad response from the server.");
-        }
-
-        const json = await response.json();
-        const validation = usersSchema.safeParse(json);
-
-        if (!validation.success) {
-          return new ExpectedError("Malformed response from the server.");
-        }
-
-        return validation.data;
+    request(async ({ signal }) => {
+      const response = await GET("https://jsonplaceholder.typicode.com/users")
+        .withSignal(signal)
+        .withHeader("Accept", "application/json")
+        .send();
+      
+      if (!response.ok) {
+        return new ExpectedError("Bad response from the server.");
       }
+
+      const json = await response.json();
+      const validation = usersSchema.safeParse(json);
+
+      if (!validation.success) {
+        return new ExpectedError("Malformed response from the server.");
+      }
+
+      return validation.data;
     });
   }, [request]);
 
@@ -180,7 +176,7 @@ Once this code executes, whenever the timeout has reached, the `CancelError` wil
 
 ```typescript
 import { useEffect, useCallback } from "react";
-import { ExpectedError, useStatefulRequest, isError, match } from "saint-bernard";
+import { ExpectedError, useStatefulRequest, isError, match, GET } from "saint-bernard";
 import { z } from "zod";
 
 const usersSchema = z.array(z.object({
@@ -201,26 +197,24 @@ const Main = () => {
   });
 
   const getUsers = useCallback(() => {
-    request({
-      url: "https://jsonplaceholder.typicode.com/users",
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      onResponse: async response => {
-        if (!response.ok) {
-          return new ExpectedError("Bad response from the server.");
-        }
+    request(async ({ signal }) => {
+      const response = await GET("https://jsonplaceholder.typicode.com/users")
+        .withSignal(signal)
+        .withHeader("Accept", "application/json")
+        .send();
 
-        const json = await response.json();
-        const validation = usersSchema.safeParse(json);
-
-        if (!validation.success) {
-          return new ExpectedError("Malformed response from the server.");
-        }
-
-        return validation.data;
+      if (!response.ok) {
+        return new ExpectedError("Bad response from the server.");
       }
+
+      const json = await response.json();
+      const validation = usersSchema.safeParse(json);
+
+      if (!validation.success) {
+        return new ExpectedError("Malformed response from the server.");
+      }
+
+      return validation.data;
     });
   }, [request]);
 
