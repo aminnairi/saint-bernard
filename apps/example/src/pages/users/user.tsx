@@ -41,7 +41,7 @@ export const UserPage = (): ReactNode => {
         return parsed;
       }
     });
-  }, [user]);
+  }, [request, user]);
 
   useEffect(() => {
     getUser();
