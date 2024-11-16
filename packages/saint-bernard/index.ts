@@ -247,14 +247,15 @@ export type Options<State> = {
   initialLoading?: boolean
 }
 
-export type RequestOptions<State> = Omit<RequestInit, "signal"> & {
-  url: string,
-  onResponse: (response: Response) => Promise<State | ExpectedError>
+export type RequestFunctionCallbackOptions = {
+  signal: AbortSignal
 }
 
 export type CancelFunction = () => void;
 
-export type RequestFunction<State> = (options: RequestOptions<State>) => void;
+export type RequestFunctionCallback<State> = (options: RequestFunctionCallbackOptions) => Promise<State | ExpectedError>
+
+export type RequestFunction<State> = (callback: RequestFunctionCallback<State>) => Promise<void>;
 
 export type ResetFunction = () => void;
 
@@ -284,19 +285,18 @@ export const useStatefulRequest = <State = void>({ initialLoading = false, initi
     setState(initialState);
   }, [initialState]);
 
-  const request: RequestFunction<State> = useCallback(({ onResponse, url, ...options }) => {
-    setState(initialState);
-    setLoading(true);
-    abortControllerRef.current = new AbortController();
+  const request: RequestFunction<State> = useCallback(async (callback) => {
+    try {
+      setState(initialState);
+      setLoading(true);
+      abortControllerRef.current = new AbortController();
 
-    fetch(url, {
-      ...options,
-      signal: abortControllerRef.current.signal
-    }).then(response => {
-      return onResponse(response);
-    }).then(newState => {
-      setState(newState);
-    }).catch(error => {
+      const state = await callback({
+        signal: abortControllerRef.current.signal
+      });
+
+      setState(state);
+    } catch (error) {
       if (error instanceof Error) {
         if (error.name === "AbortError") {
           setState(new CancelError);
@@ -313,10 +313,9 @@ export const useStatefulRequest = <State = void>({ initialLoading = false, initi
       }
 
       setState(new UnexpectedError(String(error)));
-
-    }).finally(() => {
+    } finally {
       setLoading(false);
-    });
+    }
   }, []);
 
   useEffect(() => {
