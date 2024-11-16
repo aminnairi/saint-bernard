@@ -40,7 +40,7 @@ export const UsersPage = (): ReactNode => {
         return parsed
       }
     })
-  }, []);
+  }, [request]);
 
   useEffect(() => {
     getUsers();

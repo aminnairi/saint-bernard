@@ -35,7 +35,7 @@ export const UsersUserPostsPage = (): ReactNode => {
         return parsed;
       }
     });
-  }, []);
+  }, [request]);
 
   const goTo = useCallback((path: string) => () => {
     navigate(path)
