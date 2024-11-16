@@ -37,6 +37,14 @@ export default defineConfig({
           {
             text: "Timeout",
             link: "/examples/timeout"
+          },
+          {
+            text: "Working with HTTP servers",
+            link: "/examples/working-with-http-servers"
+          },
+          {
+            text: "Reusable HTTP settings",
+            link: "/examples/reusable-http-settings"
           }
         ]
       },
@@ -62,6 +70,10 @@ export default defineConfig({
           {
             text: "ExpectedError",
             link: "/api/expected-error"
+          },
+          {
+            text: "httpRequest",
+            link: "/api/http-request.md"
           }
         ]
       },
@@ -71,10 +83,6 @@ export default defineConfig({
           {
             text: "Prior Art",
             link: "/miscellaneous/prior-art"
-          },
-          {
-            text: "Working with HTTP servers",
-            link: "/miscellaneous/working-with-http-servers"
           }
         ]
       }
